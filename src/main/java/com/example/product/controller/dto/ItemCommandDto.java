@@ -23,8 +23,4 @@ public  final class ItemCommandDto {
             @NotNull(message = "상품 수량을 입력하십시오.")
             Integer quantity) {
     }
-    @Builder
-    public record ItemSaveResponse(Item item) {
-
-    }
 }
