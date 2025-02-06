@@ -1,12 +1,11 @@
-package com.example.member.controller;
+package com.example.user.member.controller;
 
-import com.example.member.controller.dto.MemberDto.MemberSaveRequest;
-import com.example.member.domain.Member;
-import com.example.member.usecase.MemberSaveUseCase;
+import com.example.user.member.controller.dto.MemberDto.MemberSaveRequest;
+import com.example.user.member.domain.Member;
+import com.example.user.member.usecase.MemberSaveUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,8 +36,4 @@ public class MemberController {
         redirectAttributes.addFlashAttribute("successMessage", "회원가입이 완료되었습니다. 로그인하세요!");
         return "redirect:/";
     }
-    
-    
-
-    
 }
