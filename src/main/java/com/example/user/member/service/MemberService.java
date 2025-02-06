@@ -3,7 +3,6 @@ package com.example.user.member.service;
 import com.example.user.member.domain.Member;
 import com.example.user.member.repository.MemberRepository;
 import com.example.user.member.usecase.MemberFindUseCase;
-import com.example.user.login.usecase.LoginUseCase;
 import com.example.user.member.usecase.MemberSaveUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

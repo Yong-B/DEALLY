@@ -34,7 +34,6 @@ public class LoginController {
             bindingResult.reject("loginFail", "아이디 또는 비밀번호가 맞지 않습니다.");
             return "login/loginForm";
         }
-        
         return "redirect:/";
     }
 }

@@ -16,7 +16,7 @@ public class Item {
     @Column(name = "item_name")
     private String itemName;
     
-    private Integer price;
+    private Float price;
     
     private Integer quantity;
 
@@ -25,14 +25,14 @@ public class Item {
             builderMethodName = "prepareUpdate",
             buildMethodName = "update"
     )
-    public Item(String itemName, Integer price, Integer quantity) {
+    public Item(String itemName, Float price, Integer quantity) {
         
         this.itemName = itemName;
         this.price = price;
         this.quantity = quantity;
     }
 
-    public Item updateFields(String itemName, Integer price, Integer quantity) {
+    public Item updateFields(String itemName, Float price, Integer quantity) {
         this.itemName = itemName;
         this.price = price;
         this.quantity = quantity;
