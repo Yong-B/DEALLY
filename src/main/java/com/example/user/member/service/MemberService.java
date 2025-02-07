@@ -14,7 +14,26 @@ public class MemberService implements MemberSaveUseCase, MemberFindUseCase {
     private final MemberRepository memberRepository;
 
     @Override
+    public boolean isLoginIdDuplicate(String loginId) {
+        return memberRepository.findByLoginId(loginId).isPresent();
+    }
+
+    @Override
+    public boolean isEmailDuplicate(String email) {
+        return memberRepository.findByEmail(email).isPresent();
+    }
+    
+    @Override
     public Member save(Member member) {
+        // 로그인 ID 중복 검사
+        if (isLoginIdDuplicate(member.getLoginId())) {
+            throw new IllegalArgumentException("이미 사용 중인 로그인 ID입니다.");
+        }
+        // 이메일 중복 검사
+        if (isEmailDuplicate(member.getEmail())) {
+            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+        }
+        // 중복 검사 통과 후 회원 저장
         return memberRepository.save(member);
     }
 
@@ -22,4 +41,5 @@ public class MemberService implements MemberSaveUseCase, MemberFindUseCase {
     public Optional<Member> findByLoginId(String loginId) {
         return memberRepository.findByLoginId(loginId);
     }
+
 }

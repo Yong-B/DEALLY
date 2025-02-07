@@ -2,6 +2,7 @@ package com.example.user.login.controller.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Getter
 @ToString

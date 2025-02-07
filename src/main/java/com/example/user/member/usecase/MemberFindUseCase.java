@@ -5,4 +5,5 @@ import java.util.Optional;
 
 public interface MemberFindUseCase {
     Optional<Member> findByLoginId(String loginId);
+
 }
