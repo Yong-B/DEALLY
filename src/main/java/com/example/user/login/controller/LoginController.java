@@ -32,11 +32,16 @@ public class LoginController {
         }
 
         try {
-            Optional<Member> loginMember = loginUseCase.login(form.getLoginId(), form.getPassword());
-            if (loginMember.isEmpty()) {
-                bindingResult.reject("loginFail", "아이디 또는 비밀번호가 맞지 않습니다.");
+            Member loginMember = loginUseCase.login(form.getLoginId(), form.getPassword())
+                    .orElseGet(() -> {
+                        bindingResult.reject("loginFail", "아이디 또는 비밀번호가 맞지 않습니다.");
+                        return null; // 로그인 실패 시 null 반환
+                    });
+
+            if (loginMember == null) {
                 return "login/loginForm";
             }
+
             return "redirect:/basic/items";
         } catch (Exception e) {
             System.out.println("로그인 중 오류 발생: " + e.getMessage());
@@ -44,4 +49,5 @@ public class LoginController {
             return "login/loginForm";
         }
     }
+
 }
