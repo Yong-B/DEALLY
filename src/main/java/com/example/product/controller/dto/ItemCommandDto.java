@@ -1,9 +1,6 @@
 package com.example.product.controller.dto;
 
-import com.example.product.domain.Item;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 
 public  final class ItemCommandDto {
@@ -18,13 +15,11 @@ public  final class ItemCommandDto {
             @Size(max = 50, message = "상품명은 최대 50글자입니다.")
             String itemName,
 
+            @Min(0)
+            @Max(10)
             @NotNull(message = "상품 가격을 입력하십시오.")
-            Integer price,
+            Float price,
             @NotNull(message = "상품 수량을 입력하십시오.")
             Integer quantity) {
-    }
-    @Builder
-    public record ItemSaveResponse(Item item) {
-
     }
 }

@@ -2,7 +2,11 @@ package com.example.product.controller;
 
 import com.example.product.controller.dto.ItemCommandDto.ItemSaveRequest;
 import com.example.product.domain.Item;
-import com.example.product.usecase.*;
+import com.example.product.usecase.ItemSaveUseCase;
+import com.example.product.usecase.ItemSelectAllUseCase;
+import com.example.product.usecase.ItemSelectOneUseCase;
+import com.example.product.usecase.ItemUpdateUseCase;
+import com.example.product.usecase.ItemDeleteUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -10,9 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -31,7 +33,7 @@ public class ItemController {
                 .price(dto.price())
                 .quantity(dto.quantity())
                 .build();
-
+        
         itemSaveUseCase.save(item);
         redirectAttributes.addAttribute("itemId", item.getId());
         redirectAttributes.addAttribute("status", true);

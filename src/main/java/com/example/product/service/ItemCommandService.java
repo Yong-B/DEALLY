@@ -5,7 +5,6 @@ import com.example.product.repository.ItemRepository;
 import com.example.product.usecase.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +15,6 @@ import java.util.List;
 public class ItemCommandService implements ItemSaveUseCase, ItemSelectAllUseCase, ItemSelectOneUseCase, ItemUpdateUseCase, ItemDeleteUseCase {
     private final ItemRepository itemRepository;
 
-    
     @Override
     public Item save(Item item) {
         return itemRepository.save(item);
