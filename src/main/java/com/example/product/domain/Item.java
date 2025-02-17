@@ -20,16 +20,20 @@ public class Item {
     
     private Integer quantity;
 
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
+
     @Builder(
             builderClassName = "UpdateItemBuilder",
             builderMethodName = "prepareUpdate",
             buildMethodName = "update"
     )
-    public Item(String itemName, Float price, Integer quantity) {
+    public Item(String itemName, Float price, Integer quantity, Long userId) {
         
         this.itemName = itemName;
         this.price = price;
         this.quantity = quantity;
+        this.userId = userId;
     }
 
     public Item updateFields(String itemName, Float price, Integer quantity) {
