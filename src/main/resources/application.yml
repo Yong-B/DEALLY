@@ -28,3 +28,8 @@ spring:
     locations:
       - classpath:db/migration/v1_0
         
+  spring:
+    security:
+      user:
+        name: user
+        password: 1234

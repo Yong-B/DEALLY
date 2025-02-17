@@ -8,4 +8,5 @@ public interface MemberSaveUseCase {
     boolean isLoginIdDuplicate(String loginId);
 
     boolean isEmailDuplicate(String email);
+
 }
