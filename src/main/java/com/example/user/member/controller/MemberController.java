@@ -5,6 +5,7 @@ import com.example.user.member.domain.Member;
 import com.example.user.member.usecase.MemberSaveUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import java.util.Map;
 @RequestMapping("/member")
 public class MemberController {
     private final MemberSaveUseCase memberSaveUseCase;
+    private final PasswordEncoder passwordEncoder;
 
     @GetMapping("/add")
     public String addForm(@ModelAttribute("member") MemberDto dto) {
@@ -31,23 +33,11 @@ public class MemberController {
             return "member/addMemberForm";
         }
 
-        // 중복 검사 추가
-        try {
-            Member member = dto.memberSave();
-            memberSaveUseCase.save(member);  // 중복 검사 후 회원 저장
-
-            redirectAttributes.addFlashAttribute("successMessage", "회원가입이 완료되었습니다. 로그인하세요!");
-            return "redirect:/";
-        } catch (IllegalArgumentException e) {
-            // 중복된 로그인 ID나 이메일이 있을 경우 오류 메시지 처리
-            if (e.getMessage().contains("로그인 ID")) {
-                bindingResult.rejectValue("loginId", "duplicate.loginId", "이미 사용 중인 로그인 ID입니다.");
-            }
-            if (e.getMessage().contains("이메일")) {
-                bindingResult.rejectValue("email", "duplicate.email", "이미 사용 중인 이메일입니다.");
-            }
-            return "member/addMemberForm";  // 오류 메시지 표시 후 다시 폼으로 돌아감
-        }
+        Member member = dto.memberSave();
+        memberSaveUseCase.save(member);
+        redirectAttributes.addFlashAttribute("successMessage", "회원가입이 완료되었습니다. 로그인하세요!");
+        System.out.println("회원가입 성공");
+        return "redirect:/";
     }
 
     @GetMapping("/check-login-id")
