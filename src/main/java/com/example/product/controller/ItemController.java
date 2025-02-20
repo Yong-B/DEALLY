@@ -7,9 +7,12 @@ import com.example.product.usecase.ItemSelectAllUseCase;
 import com.example.product.usecase.ItemSelectOneUseCase;
 import com.example.product.usecase.ItemUpdateUseCase;
 import com.example.product.usecase.ItemDeleteUseCase;
+import com.example.user.login.security.dto.CustomMemberDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -28,10 +31,16 @@ public class ItemController {
 
     @PostMapping("/add") // 추가
     public String save(@ModelAttribute @Valid ItemSaveRequest dto, RedirectAttributes redirectAttributes) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomMemberDetails memberDetails = (CustomMemberDetails) authentication.getPrincipal();
+        String loginId = memberDetails.getUsername();
+        
         Item item = Item.builder()
                 .itemName(dto.itemName())
                 .price(dto.price())
                 .quantity(dto.quantity())
+                .userId(Long.valueOf(loginId))
                 .build();
         
         itemSaveUseCase.save(item);

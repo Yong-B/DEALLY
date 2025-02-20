@@ -38,13 +38,13 @@
 <div class="container text-center">
     <img src="/images/logo.png" alt="로고" class="logo">
     <h2 class="mb-4">쇼핑몰 로그인</h2>
-    <form th:action="@{/loginProc}" method="post">
+    <form th:action="@{/login}" method="post">
         <div th:if="${param.error}">
             <p class="field-error">아이디 또는 비밀번호가 잘못되었습니다. 다시 시도해 주세요.</p>
         </div>
         <div>
             <label for="loginId">로그인 ID</label>
-            <input type="text" id="loginId" name="username" class="form-control">
+            <input type="text" id="loginId" name="loginId" class="form-control">
         </div>
         <div>
             <label for="password">비밀번호</label>

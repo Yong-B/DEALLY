@@ -26,4 +26,4 @@ services:
 
 # 볼륨 컨테이너는 지금 중요한 개념은 아닙니다.
 volumes:
-  sticky_volume_demo_postgres14: 
+  sticky_volume_demo_postgres14:
