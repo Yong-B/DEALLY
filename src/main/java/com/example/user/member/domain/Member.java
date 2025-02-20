@@ -38,6 +38,6 @@ public class Member {
         this.password = password;
         this.name = name;
         this.email = email;
-        this.role = role;
+        this.role = (role != null) ? role : "ROLE_USER";
     }
 }
