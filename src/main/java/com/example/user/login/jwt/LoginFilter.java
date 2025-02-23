@@ -2,6 +2,8 @@ package com.example.user.login.jwt;
 
 import com.example.user.login.security.dto.CustomMemberDetails;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -40,9 +42,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         return authenticationManager.authenticate(authToken);
     }
+
     
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException  {
 
         CustomMemberDetails customMemberDetails = (CustomMemberDetails) authentication.getPrincipal();
         String loginId = customMemberDetails.getUsername();
@@ -53,12 +56,17 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String role = auth.getAuthority();
 
-        String token = jwtUtil.createJwt(loginId, role, 60 * 60 * 1000L);
-        
-        response.addHeader("Authorization", "Bearer " + token);
-     
-//        response.sendRedirect("/basic/items");
-//       
+        String token = jwtUtil.createJwt(loginId, role, 600000L);
+
+        Cookie jwtCookie = new Cookie("jwt", token);
+        jwtCookie.setHttpOnly(true);  // JavaScript에서 접근 불가능 (보안 강화)
+        jwtCookie.setSecure(false);   // HTTPS가 아니라면 false (운영 환경에서는 true로 설정)
+        jwtCookie.setPath("/");       // 모든 경로에서 쿠키 사용 가능
+        jwtCookie.setMaxAge(60 * 60); // 1시간 동안 유효
+
+        response.addCookie(jwtCookie);
+        response.sendRedirect("/basic/items");
+
     }
 
     //로그인 실패시 실행하는 메소드

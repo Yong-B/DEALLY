@@ -51,7 +51,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/", "/login", "/member/add", "/member/check-login-id", "/member/check-email", "/css/**", "/js/**", "/images/**").permitAll()  // 로그인 페이지와 회원가입 요청은 모두 허용
                         .requestMatchers("/basic/items").hasRole("USER")
-                        .anyRequest().authenticated()
+                        .requestMatchers("/basic/items/add").hasRole("USER")
+                        .requestMatchers("/purchase/**").hasRole("USER")
+                       .anyRequest().authenticated()
                 );
 
         http
