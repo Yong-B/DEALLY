@@ -36,6 +36,12 @@ public class ItemCommandService implements ItemSaveUseCase, ItemSelectAllUseCase
                 .orElseThrow(() -> new IllegalArgumentException("Item not found with id: " + id));
     }
 
+    @Override
+    public Item findByUserId(Long userId) {
+        return itemRepository.findProductByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Item not found with id: " + userId));
+    }
+
     @Transactional
     @Override
     public Item update(Long itemId, Item updateParam) {

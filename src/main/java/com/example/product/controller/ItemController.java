@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -58,10 +59,15 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}") // 상세 조회
-    public String item(@PathVariable Long itemId, Model model) {
+    public String item(@PathVariable Long itemId, @AuthenticationPrincipal CustomMemberDetails memberDetails, Model model) {
         Item item = itemSelectOneUseCase.findById(itemId);
         model.addAttribute("item", item);
-        return "basic/item";
+        
+        String loginId = memberDetails.getUsername();
+        
+        String ownerId = String.valueOf(item.getUserId());
+
+        return loginId.equals(ownerId) ? "basic/item" : "purchase/item-purchase";
 
     }
 
