@@ -16,7 +16,6 @@ public  final class ItemCommandDto {
             String itemName,
 
             @Min(0)
-            @Max(10)
             @NotNull(message = "상품 가격을 입력하십시오.")
             Float price,
             @NotNull(message = "상품 수량을 입력하십시오.")
