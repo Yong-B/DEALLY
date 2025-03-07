@@ -2,133 +2,155 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <link th:href="@{/css/bootstrap.min.css}"
-          href="../css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:href="@{/css/bootstrap.min.css}" href="../css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f7f7f7;
+            background: #f8f9fa;
             margin: 0;
-            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .navbar .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ff8a3d;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
         }
 
         .container {
-            max-width: 960px;
-            margin-top: 50px;
-        }
-
-        .page-header {
-            background-color: #ffffff;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            background: white;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 17px;
+        }
+
+        .product-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px 0;
+        }
+
+        .product-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 15px;
             text-align: center;
         }
 
-        h2 {
-            font-size: 1.8rem;
-            color: #333;
-            font-weight: 600;
+        .product-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
         }
 
-        .btn-primary {
-            background-color: #ff9f00;
-            border-color: #ff9f00;
-            color: #fff;
-            font-size: 1rem;
-            padding: 10px 20px;
-            border-radius: 5px;
-        }
-
-        .btn-primary:hover {
-            background-color: #ff7a00;
-            border-color: #ff7a00;
-        }
-
-        .table {
-            margin-top: 30px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            border-collapse: separate;
-            border-spacing: 0 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-            color: #555;
-        }
-
-        th {
-            background-color: #f8f8f8;
-            color: #333;
+        .product-name {
+            font-size: 16px;
             font-weight: bold;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
+            margin: 10px 0 5px;
         }
 
-        td {
-            background-color: #fafafa;
-            border-bottom: 1px solid #e0e0e0;
+        .product-price {
+            font-size: 14px;
+            color: #ff8a3d;
+            font-weight: bold;
         }
 
-        td a {
-            color: #ff9f00;
+        .add-product {
+            display: block;
+            text-align: right;
+            margin-bottom: 20px;
+            color: #ff8a3d;
+            font-weight: bold;
             text-decoration: none;
-        }
-
-        td a:hover {
-            text-decoration: underline;
-        }
-
-        .float-end {
-            float: right;
-        }
-
-        hr {
-            border: 0;
-            border-top: 1px solid #e0e0e0;
-            margin: 30px 0;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="page-header">
-        <h2>상품 목록</h2>
+<div class="navbar">
+    <div class="logo">DEALLY</div>
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="검색어를 입력하세요">
+        <button class="btn btn-primary" onclick="searchItems()">검색</button>
     </div>
-
-    <div class="row">
-        <div class="col text-end">
-            <button class="btn btn-primary"
-                    onclick="location.href='addForm.html'"
-                    th:onclick="|location.href='@{/basic/items/add}'|"
-                    type="button">상품 등록</button>
-        </div>
-    </div>
-
-    <hr>
-    <div>
-        <table class="table">
-            <thead>
-            <tr>
-                <th>상품명</th>
-                <th>가격</th>
-                <th>수량</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="item : ${items}">
-                <td><a href="item.html" th:href="@{/basic/items/{itemId}(itemId=${item.id})}" th:text="${item.itemName}">상품명</a></td>
-                <td th:text="${item.price}">10000</td>
-                <td th:text="${item.quantity}">10</td>
-            </tr>
-            </tbody>
-        </table>
+    <div class="nav-buttons">
+        <button class="btn btn-primary" onclick="location.href='/mypage'" th:onclick="|location.href='@{/mypage}'|">마이페이지</button>
+        <button class="btn btn-secondary" onclick="logout()">로그아웃</button>
     </div>
 </div>
+
+<div class="container">
+    <a class="add-product" href="addForm.html" th:href="@{/basic/items/add}">상품 등록</a>
+
+    <div class="product-list">
+        <div class="product-card" th:each="item : ${items}">
+            <a class="product-link" th:href="@{/basic/items/{itemId}(itemId=${item.id})}">
+                <div class="product-name" th:text="${item.itemName}">상품명</div>
+                <div class="product-price" th:text="|${item.price}원|">10000원</div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function fetchWithAccessToken(url, options = {}) {
+        let accessToken = localStorage.getItem("accessToken");
+        if (accessToken) {
+            if (!options.headers) {
+                options.headers = {};
+            }
+            options.headers["access"] = accessToken;
+        }
+        let response = await fetch(url, options);
+        if (!response.ok) {
+            console.error("Request failed with status:", response.status);
+        }
+        return response;
+    }
+
+    async function logout() {
+        try {
+            let response = await fetch("/logout", {
+                method: "POST",
+                credentials: "include"
+            });
+            console.log("서버 응답 상태:", response.status);
+            if (response.ok || response.status === 400) {
+                localStorage.removeItem("accessToken");
+                window.location.href = "/login";
+            } else {
+                console.error("Logout failed");
+            }
+        } catch (error) {
+            console.error("Error during logout", error);
+        }
+    }
+
+    function searchItems() {
+        let query = document.getElementById("searchInput").value;
+        if (query) {
+            window.location.href = `/search?query=${encodeURIComponent(query)}`;
+        }
+    }
+</script>
 
 </body>
 </html>

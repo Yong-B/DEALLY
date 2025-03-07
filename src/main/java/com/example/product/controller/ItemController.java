@@ -31,10 +31,8 @@ public class ItemController {
     private final ItemDeleteUseCase itemDeleteUseCase;
 
     @PostMapping("/add") // 추가
-    public String save(@ModelAttribute @Valid ItemSaveRequest dto, RedirectAttributes redirectAttributes) {
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomMemberDetails memberDetails = (CustomMemberDetails) authentication.getPrincipal();
+    public String save(@ModelAttribute @Valid ItemSaveRequest dto, @AuthenticationPrincipal CustomMemberDetails memberDetails, RedirectAttributes redirectAttributes) {
+        
         String loginId = memberDetails.getUsername();
         
         Item item = Item.builder()

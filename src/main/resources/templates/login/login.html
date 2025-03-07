@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
+    <title>로그인</title>
     <link th:href="@{/css/bootstrap.min.css}" href="../css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -38,29 +39,65 @@
 <div class="container text-center">
     <img src="/images/logo.png" alt="로고" class="logo">
     <h2 class="mb-4">쇼핑몰 로그인</h2>
-    <form th:action="@{/login}" method="post">
-        <div th:if="${param.error}">
-            <p class="field-error">아이디 또는 비밀번호가 잘못되었습니다. 다시 시도해 주세요.</p>
+
+    <form id="loginForm">
+        <div id="error-message" class="field-error" style="display: none;">아이디 또는 비밀번호가 잘못되었습니다. 다시 시도해 주세요.</div>
+
+        <div class="mb-3">
+            <label for="loginId" class="form-label">로그인 ID</label>
+            <input type="text" id="loginId" name="loginId" class="form-control" required>
         </div>
-        <div>
-            <label for="loginId">로그인 ID</label>
-            <input type="text" id="loginId" name="loginId" class="form-control">
+
+        <div class="mb-3">
+            <label for="password" class="form-label">비밀번호</label>
+            <input type="password" id="password" name="password" class="form-control" required>
         </div>
-        <div>
-            <label for="password">비밀번호</label>
-            <input type="password" id="password" name="password" class="form-control">
-        </div>
+
         <hr class="my-4">
         <div class="row">
             <div class="col">
                 <button class="w-100 btn btn-primary btn-lg" type="submit">로그인</button>
             </div>
             <div class="col">
-                <button class="w-100 btn btn-secondary btn-lg" onclick="location.href='items.html'" th:onclick="|location.href='@{/}'|" type="button">취소</button>
+                <button class="w-100 btn btn-secondary btn-lg" type="button" onclick="location.href='/'">취소</button>
             </div>
         </div>
     </form>
 </div>
+
+<script>
+    document.getElementById("loginForm").addEventListener("submit", async function(event) {
+        event.preventDefault(); //  기본 submit 동작 방지
+
+        let loginId = document.getElementById("loginId").value;
+        let password = document.getElementById("password").value;
+
+        try {
+            let response = await fetch("/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ loginId, password }),
+                credentials: "include" //  쿠키 포함 (리프레시 토큰 저장) 
+            });
+
+            let accessToken = response.headers.get("access"); //  백엔드 응답 헤더에서 access 토큰 가져오기
+            if (accessToken) {
+                localStorage.setItem("accessToken", accessToken); //  액세스 토큰을 로컬 스토리지에 저장
+            }
+
+            if (!response.ok) {
+                document.getElementById("error-message").style.display = "block"; // 로그인 실패 메시지 표시
+                throw new Error("Login failed");
+            }
+            
+            window.location.href = "/basic/items"; // 로그인 성공 후 이동
+
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    });
+</script>
+
 
 </body>
 </html>
