@@ -23,10 +23,10 @@ public class CustomUserDetailsService implements UserDetailsService {
         // loginId로 Member를 조회
         Member member = memberFindUseCase.findByLoginId(loginId);
         
-        log.info("로그인 시도 - loginId: {}, member: {}", loginId, member);
+//        log.info("로그인 시도 - loginId: {}, member: {}", loginId, member);
         // Member가 없을 경우, 예외 던지기
         if (member == null) {
-            log.error("사용자를 찾을 수 없습니다. 로그인 ID: {}", loginId);
+//            log.error("사용자를 찾을 수 없습니다. 로그인 ID: {}", loginId);
             throw new UsernameNotFoundException("해당 사용자를 찾을 수 없습니다: " + loginId);
         }
 

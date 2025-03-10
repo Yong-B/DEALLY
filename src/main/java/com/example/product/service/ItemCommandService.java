@@ -5,6 +5,8 @@ import com.example.product.repository.ItemRepository;
 import com.example.product.usecase.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -21,19 +23,26 @@ public class ItemCommandService implements ItemSaveUseCase, ItemSelectAllUseCase
     }
     
     @Override
-    public List<Item> findAll() {
-        return itemRepository.findAll();
+    public Page<Item> findAll(Pageable pageable) {
+        return itemRepository.findAll(pageable);
     }
 
     @Override
-    public List<Item> findAll(Sort sort) {
-        return itemRepository.findAll(sort); // 정렬된 데이터 조회
+    public Page<Item> searchByItemName(String searchKeyword, Pageable pageable) {
+        return itemRepository.findByItemNameContaining(searchKeyword, pageable);
     }
+
 
     @Override
     public Item findById(Long id) {
         return itemRepository.findProductById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Item not found with id: " + id));
+    }
+
+    @Override
+    public Item findByUserId(Long userId) {
+        return itemRepository.findProductByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Item not found with id: " + userId));
     }
 
     @Transactional

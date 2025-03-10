@@ -11,24 +11,84 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            margin: 0;
         }
+
         .container {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            max-width: 550px;
+            text-align: center;
         }
+
         .logo {
-            max-width: 150px;
-            margin-bottom: 20px;
+            max-width: 180px;
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            color: #ff8a3d;
+            font-weight: bold;
+        }
+
+        p {
+            color: #777;
+            font-size: 1rem;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            font-size: 1.1rem;
+            padding: 15px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-warning {
+            background-color: #ff8a3d;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #ff702d;
+        }
+
+        .btn-dark {
+            background-color: #343a40;
+            color: white;
+        }
+
+        .btn-dark:hover {
+            background-color: #23272b;
+        }
+
+        .row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .col {
+            flex: 1;
+        }
+
+        .alert {
+            margin-top: 20px;
+            font-size: 1rem;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #d4edda;
+            color: #155724;
         }
     </style>
 </head>
 <body>
-<div class="container text-center">
+
+<div class="container">
     <img src="/images/logo.png" alt="쇼핑몰 로고" class="logo">
-    <h2>당신의 동네 마켓</h2>
+    <h2>DEALLY (당신의 동네 마켓)</h2>
     <p class="text-muted">판매자와 구매자가 하나 되는 따뜻한 쇼핑 공간</p>
 
     <!-- 성공 메시지 표시 -->
@@ -38,8 +98,9 @@
         </div>
     </div>
 
+    <!-- 회원 가입 및 로그인 버튼 -->
     <div class="row">
-        <div class="col mb-2">
+        <div class="col">
             <button class="w-100 btn btn-warning btn-lg" type="button"
                     th:onclick="|location.href='@{/member/add}'|">
                 회원 가입
@@ -53,5 +114,6 @@
         </div>
     </div>
 </div>
+
 </body>
 </html>

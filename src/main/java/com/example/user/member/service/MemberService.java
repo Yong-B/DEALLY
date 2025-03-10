@@ -38,8 +38,9 @@ public class MemberService implements MemberSaveUseCase, MemberFindUseCase {
         if (isEmailDuplicate(member.getEmail())) {
             throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
         }
-        // 중복 검사 통과 후 회원 저장
+       
         Member encodedMember = member.encodePassword(passwordEncoder);
+        
         return memberRepository.save(encodedMember);
     }
 

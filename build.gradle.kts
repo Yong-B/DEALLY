@@ -68,6 +68,11 @@ dependencies {
 	testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
 	testImplementation("org.jetbrains.kotlin:kotlin-reflect")
 	testImplementation("io.mockk:mockk:1.13.12")
+
+	// jwt
+	implementation("io.jsonwebtoken:jjwt-api:0.12.3")
+	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.3")
+	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.3")
 }
 
 sourceSets {

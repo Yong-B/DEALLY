@@ -27,9 +27,8 @@ spring:
     baseline-on-migrate: true # flyway schema history 테이블이 없다면 생성한다.
     locations:
       - classpath:db/migration/v1_0
-        
-  spring:
-    security:
-      user:
-        name: user
-        password: 1234
+  
+jwt:
+  secret: dptmvkzkflsktkfkdgodyroqkfwkdbalroqkfwkdbalaaaaaaaaaaaaaaaabbbbb
+  
+ 
