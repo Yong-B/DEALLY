@@ -19,10 +19,11 @@
             background-color: white;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-        .navbar .logo {
+        .navbar .logo a {
             font-size: 28px;
             font-weight: bold;
             color: #ff8a3d;
+            text-decoration: none;
         }
 
         .search-box {
@@ -86,11 +87,13 @@
 <body>
 
 <div class="navbar">
-    <div class="logo">DEALLY</div>
-    <div class="search-box">
-        <input type="text" id="searchInput" placeholder="검색어를 입력하세요">
-        <button class="btn btn-primary" onclick="searchItems()">검색</button>
+    <div class="logo">
+        <a th:href="@{/basic/items}">DEALLY</a>
     </div>
+    <form class="search-box" th:action="@{/basic/items}" method="get">
+        <input type="text" id="searchInput" name="searchKeyword" placeholder="검색어를 입력하세요" th:value="${searchKeyword}">
+        <button class="btn btn-primary" type="submit">검색</button>
+    </form>
     <div class="nav-buttons">
         <button class="btn btn-primary" onclick="location.href='/mypage'" th:onclick="|location.href='@{/mypage}'|">마이페이지</button>
         <button class="btn btn-secondary" onclick="logout()">로그아웃</button>
@@ -100,39 +103,66 @@
 <div class="container">
     <a class="add-product" href="addForm.html" th:href="@{/basic/items/add}">상품 등록</a>
 
-    <div class="product-list">
-        <div class="product-card" th:each="item : ${items}">
+    <h2 th:if="${searchKeyword != null and searchKeyword != ''}" th:text="'\'' + ${searchKeyword} + '\' 검색 결과'" style="margin-bottom: 20px;"></h2>
+
+    <div class="product-list" th:if="${items != null and items.totalElements > 0}">
+        <div class="product-card" th:each="item : ${items.content}">
             <a class="product-link" th:href="@{/basic/items/{itemId}(itemId=${item.id})}">
                 <div class="product-name" th:text="${item.itemName}">상품명</div>
                 <div class="product-price" th:text="|${item.price}원|">10000원</div>
             </a>
         </div>
     </div>
-</div>
 
+    <!-- 검색 결과가 없을 때 메시지 표시 -->
+    <div th:if="${noResultsMessage != null}" style="text-align: center; font-size: 18px; color: gray; margin-top: 20px;">
+        <span th:text="${noResultsMessage}"></span>
+    </div>
+</div>
 <script>
     async function fetchWithAccessToken(url, options = {}) {
         let accessToken = localStorage.getItem("accessToken");
+        
         if (accessToken) {
             if (!options.headers) {
                 options.headers = {};
             }
             options.headers["access"] = accessToken;
         }
+
         let response = await fetch(url, options);
-        if (!response.ok) {
-            console.error("Request failed with status:", response.status);
+
+        if (response.status === 401) {
+            console.log("Access token expired. Trying to reissue...");
+            let reissueResponse = await fetch("/reissue", {
+                method: "POST",
+                credentials: "include"
+            });
+
+            if (reissueResponse.ok) {
+                console.log("New access token issued. Retrying request...");
+                let newAccessToken = reissueResponse.headers.get("access");
+                
+                if (newAccessToken) {
+                    localStorage.setItem("accessToken", newAccessToken);
+                    options.headers["access"] = newAccessToken;
+                    response = await fetch(url, options);
+                }
+            } else {
+                console.log("Reissue failed. Redirecting to login...");
+                window.location.href = "/login";
+            }
         }
+
         return response;
     }
-
+    
     async function logout() {
         try {
             let response = await fetch("/logout", {
                 method: "POST",
                 credentials: "include"
             });
-            console.log("서버 응답 상태:", response.status);
             if (response.ok || response.status === 400) {
                 localStorage.removeItem("accessToken");
                 window.location.href = "/login";
@@ -141,13 +171,6 @@
             }
         } catch (error) {
             console.error("Error during logout", error);
-        }
-    }
-
-    function searchItems() {
-        let query = document.getElementById("searchInput").value;
-        if (query) {
-            window.location.href = `/search?query=${encodeURIComponent(query)}`;
         }
     }
 </script>
