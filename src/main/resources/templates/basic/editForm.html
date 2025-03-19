@@ -111,6 +111,20 @@
         .col {
             flex: 1;
         }
+        
+        .preview-container {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .preview-container img {
+            width: 80px;   /* ✅ 크기 조정 */
+            height: 80px;  /* ✅ 크기 조정 */
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+}
+        
     </style>
 </head>
 <body>
@@ -135,6 +149,14 @@
         <h2>상품 수정 폼</h2>
     </div>
 
+    <div class="preview-container">
+        <img th:src="${(item.imagesFiles != null and item.imagesFiles.size() > 0) 
+                       ? '/basic/items/images/' + item.imagesFiles[0].storeFileName 
+                       : '/images/default-thumbnail.jpg'}"
+             alt="상품 이미지"
+             class="preview-image">
+    </div>
+
     <form action="item.html" th:action method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="id">상품 ID</label>
@@ -152,7 +174,11 @@
             <label for="quantity">수량</label>
             <input type="text" id="quantity" name="quantity" class="form-control" value="10" th:value="${item.quantity}">
         </div>
-        
+
+        <div class="mb-3">
+            <label for="imageFiles">새로운 이미지 업로드</label>
+            <input type="file" id="imageFiles" name="imageFiles" class="form-control" multiple>
+        </div>
 
         <hr>
 

@@ -2,102 +2,228 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <title>로그인</title>
+    <title>로그인 - DEALLY</title>
     <link th:href="@{/css/bootstrap.min.css}" href="../css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <style>
+        /* 전체 스타일 */
         body {
             background: url('/images/shopping-bg.jpg') no-repeat center center fixed;
             background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            margin: 0;
         }
-        .container {
-            max-width: 600px;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 20px;
+
+        /* 네비게이션 바 */
+        .navbar {
+            width: 100%;
+            padding: 15px 30px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ff8a3d;
+            text-decoration: none;
+        }
+        .navbar .home-btn {
+            font-size: 16px;
+            color: #333;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .navbar .home-btn:hover {
+            color: #ff8a3d;
+        }
+
+        /* 로그인 박스 */
+        .login-container {
+            max-width: 400px;
+            width: 90%;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
         }
         .logo {
-            max-width: 150px;
+            font-size: 30px;
+            font-weight: bold;
+            color: #ff8a3d;
             margin-bottom: 20px;
         }
+
+        /* 버튼 스타일 */
         .btn-primary {
             background-color: #ff8a3d;
             border: none;
+            transition: background 0.3s;
         }
         .btn-primary:hover {
             background-color: #ff702d;
         }
+        .btn-secondary {
+            background-color: #ccc;
+            border: none;
+            transition: background 0.3s;
+        }
+        .btn-secondary:hover {
+            background-color: #bbb;
+        }
+
+        /* 에러 메시지 */
         .field-error {
             color: #dc3545;
             font-size: 0.9em;
             margin-top: 5px;
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 비밀번호 보이기/숨기기 */
+        .password-wrapper {
+            position: relative;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: gray;
+        }
+        .toggle-password:hover {
+            color: #ff8a3d;
+        }
+
+        /* 아이디 저장 */
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            justify-content: start;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
 
-<div class="container text-center">
-    <img src="/images/logo.png" alt="로고" class="logo">
-    <h2 class="mb-4">쇼핑몰 로그인</h2>
+<!-- ✅ 네비게이션 바 추가 -->
+<div class="navbar">
+    <a class="logo" href="/">DEALLY</a>
+    <a class="home-btn" href="/">홈으로 돌아가기</a>
+</div>
+
+<!-- ✅ 로그인 폼 -->
+<div class="login-container">
+    <div class="logo">DEALLY</div>
+    <h2 class="mb-4">로그인</h2>
 
     <form id="loginForm">
-        <div id="error-message" class="field-error" style="display: none;">아이디 또는 비밀번호가 잘못되었습니다. 다시 시도해 주세요.</div>
+        <!-- 에러 메시지 -->
+        <div id="error-message" class="field-error">아이디 또는 비밀번호가 잘못되었습니다.</div>
 
+        <!-- 아이디 입력 -->
         <div class="mb-3">
             <label for="loginId" class="form-label">로그인 ID</label>
             <input type="text" id="loginId" name="loginId" class="form-control" required>
         </div>
 
-        <div class="mb-3">
+        <!-- 비밀번호 입력 -->
+        <div class="mb-3 password-wrapper">
             <label for="password" class="form-label">비밀번호</label>
             <input type="password" id="password" name="password" class="form-control" required>
+            <i class="fas fa-eye toggle-password" onclick="togglePassword()"></i>
+        </div>
+
+        <!-- 아이디 저장 -->
+        <div class="remember-me">
+            <input type="checkbox" id="rememberMe">
+            <label for="rememberMe">아이디 저장</label>
         </div>
 
         <hr class="my-4">
-        <div class="row">
-            <div class="col">
-                <button class="w-100 btn btn-primary btn-lg" type="submit">로그인</button>
-            </div>
-            <div class="col">
-                <button class="w-100 btn btn-secondary btn-lg" type="button" onclick="location.href='/'">취소</button>
-            </div>
-        </div>
+
+        <!-- 로그인 버튼 -->
+        <button id="loginBtn" class="w-100 btn btn-primary btn-lg" type="submit">
+            로그인
+        </button>
+
+        <button class="w-100 btn btn-secondary btn-lg mt-2" type="button" onclick="location.href='/'">취소</button>
     </form>
 </div>
 
 <script>
+    // 🔒 비밀번호 보이기/숨기기 기능
+    function togglePassword() {
+        let passwordField = document.getElementById("password");
+        let icon = document.querySelector(".toggle-password");
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            icon.classList.replace("fa-eye", "fa-eye-slash");
+        } else {
+            passwordField.type = "password";
+            icon.classList.replace("fa-eye-slash", "fa-eye");
+        }
+    }
+
+    // ✅ 로그인 시 아이디 저장 기능
     document.getElementById("loginForm").addEventListener("submit", async function(event) {
-        event.preventDefault(); //  기본 submit 동작 방지
+        event.preventDefault(); 
 
         let loginId = document.getElementById("loginId").value;
         let password = document.getElementById("password").value;
+        let rememberMe = document.getElementById("rememberMe").checked;
 
         try {
             let response = await fetch("/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ loginId, password }),
-                credentials: "include" //  쿠키 포함 (리프레시 토큰 저장) 
+                credentials: "include"
             });
 
-            let accessToken = response.headers.get("access"); //  백엔드 응답 헤더에서 access 토큰 가져오기
-            if (accessToken) {
-                localStorage.setItem("accessToken", accessToken); //  액세스 토큰을 로컬 스토리지에 저장
-            }
-
             if (!response.ok) {
-                document.getElementById("error-message").style.display = "block"; // 로그인 실패 메시지 표시
+                document.getElementById("error-message").style.display = "block";
                 throw new Error("Login failed");
             }
-            
-            window.location.href = "/basic/items"; // 로그인 성공 후 이동
 
+            if (rememberMe) {
+                localStorage.setItem("savedLoginId", loginId);
+            } else {
+                localStorage.removeItem("savedLoginId");
+            }
+
+            window.location.href = "/basic/items";
         } catch (error) {
             console.error("Error:", error);
         }
     });
-</script>
 
+    window.onload = function() {
+        let savedLoginId = localStorage.getItem("savedLoginId");
+        if (savedLoginId) {
+            document.getElementById("loginId").value = savedLoginId;
+            document.getElementById("rememberMe").checked = true;
+        }
+    };
+</script>
 
 </body>
 </html>
