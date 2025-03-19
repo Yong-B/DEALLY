@@ -2,30 +2,38 @@ package com.example.product.controller;
 
 import com.example.product.controller.dto.ItemCommandDto.ItemSaveRequest;
 import com.example.product.domain.Item;
+import com.example.product.file.FileStore;
+import com.example.product.file.domain.UploadFile;
 import com.example.product.usecase.ItemSaveUseCase;
 import com.example.product.usecase.ItemSelectAllUseCase;
 import com.example.product.usecase.ItemSelectOneUseCase;
 import com.example.product.usecase.ItemUpdateUseCase;
 import com.example.product.usecase.ItemDeleteUseCase;
 import com.example.user.login.security.dto.CustomMemberDetails;
+import jakarta.validation.Path;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.security.core.Authentication;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.io.IOException;
+
+import java.net.MalformedURLException;
+import java.nio.file.Paths;
 import java.util.List;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/basic/items")
@@ -35,6 +43,7 @@ public class ItemController {
     private final ItemSelectOneUseCase itemSelectOneUseCase;
     private final ItemUpdateUseCase itemUpdateUseCase;
     private final ItemDeleteUseCase itemDeleteUseCase;
+    private final FileStore fileStore;
 
     @PostMapping("/add") // 추가
     public String save(@ModelAttribute @Valid ItemSaveRequest dto, @AuthenticationPrincipal CustomMemberDetails memberDetails, RedirectAttributes redirectAttributes) {
@@ -46,9 +55,22 @@ public class ItemController {
                 .price(dto.price())
                 .quantity(dto.quantity())
                 .userId(Long.valueOf(loginId))
-                .build();
-
+                .build(); 
+        
         itemSaveUseCase.save(item);
+
+        try {
+            // 파일 저장 및 Item과 연결
+            List<UploadFile> uploadFiles = fileStore.storeFiles(dto.imageFiles(), item);
+            item.addImages(uploadFiles);
+
+            itemSaveUseCase.save(item);  // Item과 이미지 함께 저장
+        } catch (IOException e) {
+            log.error("파일 저장 실패", e);
+            redirectAttributes.addFlashAttribute("errorMessage", "파일 업로드 중 오류가 발생했습니다.");
+            return "redirect:/basic/items/add";  // 파일 저장 실패 시 등록 폼으로 리다이렉트
+        }
+       
         redirectAttributes.addAttribute("itemId", item.getId());
         redirectAttributes.addAttribute("status", true);
 
@@ -75,6 +97,12 @@ public class ItemController {
             model.addAttribute("noResultsMessage", "게시글이 없어요. 검색어를 수정하시거나, 다른 조건으로 검색해주세요.");
         }
         return "basic/items";
+    }
+
+    @ResponseBody
+    @GetMapping("/images/{filename}")
+    public Resource downloadImage(@PathVariable String filename) throws MalformedURLException {
+        return new UrlResource("file:" + fileStore.getFullPath(filename));
     }
 
     @GetMapping("/{itemId}") // 상세 조회

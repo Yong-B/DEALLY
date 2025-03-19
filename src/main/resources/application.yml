@@ -28,7 +28,15 @@ spring:
     locations:
       - classpath:db/migration/v1_0
   
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+  
 jwt:
   secret: dptmvkzkflsktkfkdgodyroqkfwkdbalroqkfwkdbalaaaaaaaaaaaaaaaabbbbb
   
+file:
+  dir: C:/upload/
+
  

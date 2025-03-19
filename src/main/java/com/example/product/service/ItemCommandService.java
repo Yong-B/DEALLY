@@ -7,10 +7,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +15,7 @@ public class ItemCommandService implements ItemSaveUseCase, ItemSelectAllUseCase
     private final ItemRepository itemRepository;
 
     @Override
+    @Transactional
     public Item save(Item item) {
         return itemRepository.save(item);
     }
@@ -64,5 +62,5 @@ public class ItemCommandService implements ItemSaveUseCase, ItemSelectAllUseCase
         itemRepository.delete(findItem);
         
     }
-    
+
 }

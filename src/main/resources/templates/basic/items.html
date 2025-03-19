@@ -82,6 +82,13 @@
             font-weight: bold;
             text-decoration: none;
         }
+        
+        .product-card img {
+             width: 100%;
+             height: 250px;  /* 카드 크기에 맞게 조정 */
+             object-fit: cover; /* 이미지가 카드 크기에 맞게 꽉 차도록 */
+             border-radius: 10px;
+}
     </style>
 </head>
 <body>
@@ -95,7 +102,6 @@
         <button class="btn btn-primary" type="submit">검색</button>
     </form>
     <div class="nav-buttons">
-        <button class="btn btn-primary" onclick="location.href='/mypage'" th:onclick="|location.href='@{/mypage}'|">마이페이지</button>
         <button class="btn btn-secondary" onclick="logout()">로그아웃</button>
     </div>
 </div>
@@ -108,6 +114,13 @@
     <div class="product-list" th:if="${items != null and items.totalElements > 0}">
         <div class="product-card" th:each="item : ${items.content}">
             <a class="product-link" th:href="@{/basic/items/{itemId}(itemId=${item.id})}">
+                <!-- ✅ 대표 이미지(썸네일) 설정: 첫 번째 이미지 또는 기본 이미지 -->
+                <img th:src="${(item.imagesFiles != null and item.imagesFiles.size() > 0) 
+                            ? '/basic/items/images/' + item.imagesFiles[0].storeFileName 
+                            : '/images/default-thumbnail.jpg'}"
+                     alt="상품 이미지"
+                     class="product-image">
+
                 <div class="product-name" th:text="${item.itemName}">상품명</div>
                 <div class="product-price" th:text="|${item.price}원|">10000원</div>
             </a>
