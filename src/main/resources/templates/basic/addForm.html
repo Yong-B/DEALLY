@@ -11,6 +11,27 @@
             margin: 0;
             padding: 0;
         }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .navbar .logo a {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ff8a3d;
+            text-decoration: none;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+        }
+
 
         .container {
             max-width: 600px;
@@ -57,34 +78,34 @@
             margin: 30px 0;
         }
 
-        .btn {
+        .btn1 {
             font-size: 1.2rem;
             padding: 12px 20px;
             border-radius: 5px;
         }
 
-        .btn-primary {
+        .btn-3rd {
             background-color: #ff9f00;
             border-color: #ff9f00;
             color: #fff;
         }
 
-        .btn-primary:hover {
+        .btn-3rd:hover {
             background-color: #ff7a00;
             border-color: #ff7a00;
         }
 
-        .btn-secondary {
+        .btn-4rd {
             background-color: #f1f1f1;
             border-color: #ddd;
             color: #333;
         }
 
-        .btn-secondary:hover {
+        .btn-4rd:hover {
             background-color: #e1e1e1;
             border-color: #ccc;
         }
-
+        
         .row {
             display: flex;
             gap: 15px;
@@ -97,6 +118,20 @@
 </head>
 <body>
 
+<div class="navbar">
+    <div class="logo">
+        <a th:href="@{/basic/items}">DEALLY</a>
+    </div>
+    <form class="search-box" th:action="@{/basic/items}" method="get">
+        <input type="text" id="searchInput" name="searchKeyword" placeholder="검색어를 입력하세요" th:value="${searchKeyword}">
+        <button class="btn btn btn-primary" type="submit">검색</button>
+    </form>
+    <div class="nav-buttons">
+        <button class="btn btn btn-primary" onclick="location.href='/mypage'" th:onclick="|location.href='@{/mypage}'|">마이페이지</button>
+        <button class="btn btn-secondary" onclick="logout()">로그아웃</button>
+    </div>
+</div>
+
 <div class="container">
 
     <div class="page-header">
@@ -105,7 +140,7 @@
 
     <h4>상품 입력</h4>
 
-    <form action="item.html" th:action method="post">
+    <form th:action="@{/basic/items/add}" method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="itemName">상품명</label>
             <input type="text" id="itemName" name="itemName" class="form-control" placeholder="이름을 입력하세요" required>
@@ -119,23 +154,45 @@
             <input type="text" id="quantity" name="quantity" class="form-control" placeholder="수량을 입력하세요" required>
         </div>
 
+        <div class="mb-3">
+            <label for="imageFiles">상품 이미지</label>
+            <input type="file" id="imageFiles" name="imageFiles" class="form-control" accept="image/*" multiple>
+        </div>
+
         <hr>
 
         <div class="row">
             <div class="col">
-                <button class="w-100 btn btn-primary btn-lg" type="submit">상품 등록</button>
+                <button class="w-100 btn1 btn-3rd btn-lg" type="submit">상품 등록</button>
             </div>
             <div class="col">
-                <button class="w-100 btn btn-secondary btn-lg"
+                <button class="w-100 btn1 btn-4rd btn-lg"
                         onclick="location.href='items.html'"
                         th:onclick="|location.href='@{/basic/items}'|"
                         type="button">취소</button>
             </div>
         </div>
-
     </form>
 
-</div> <!-- /container -->
 
+</div>
+<script> 
+    async function logout() {
+        try {
+            let response = await fetch("/logout", {
+                method: "POST",
+                credentials: "include"
+            });
+            if (response.ok || response.status === 400) {
+                localStorage.removeItem("accessToken");
+                window.location.href = "/login";
+            } else {
+                console.error("Logout failed");
+            }
+        } catch (error) {
+            console.error("Error during logout", error);
+        }
+    }
+</script>>
 </body>
 </html>

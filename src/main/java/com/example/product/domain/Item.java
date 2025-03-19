@@ -1,6 +1,10 @@
 package com.example.product.domain;
+import com.example.product.file.domain.UploadFile;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
+
 @Entity
 @Getter
 @Builder
@@ -23,6 +27,10 @@ public class Item {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<UploadFile> imagesFiles;
+    
+    
     @Builder(
             builderClassName = "UpdateItemBuilder",
             builderMethodName = "prepareUpdate",
@@ -41,5 +49,9 @@ public class Item {
         this.price = price;
         this.quantity = quantity;
         return this;
+    }
+    
+    public void addImages(List<UploadFile> images) {
+        this.imagesFiles = images;
     }
 }

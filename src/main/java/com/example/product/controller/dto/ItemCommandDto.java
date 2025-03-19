@@ -2,10 +2,13 @@ package com.example.product.controller.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.Builder;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 public  final class ItemCommandDto {
     private ItemCommandDto() {
-        
+
     }
 
     @Builder
@@ -19,6 +22,8 @@ public  final class ItemCommandDto {
             @NotNull(message = "상품 가격을 입력하십시오.")
             Float price,
             @NotNull(message = "상품 수량을 입력하십시오.")
-            Integer quantity) {
+            Integer quantity,
+            List<MultipartFile> imageFiles
+    ) {
     }
 }

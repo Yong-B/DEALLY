@@ -8,6 +8,7 @@ import com.example.user.login.jwt.filter.LoginFilter;
 import com.example.user.login.repository.RefreshRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,6 +19,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -55,9 +58,10 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/","/login", "/member/**", "/css/**", "/js/**", "/images/**").permitAll()  // 로그인 페이지와 회원가입 요청은 모두 허용
+                        .requestMatchers("/","/login", "/member/**", "/css/**", "/js/**", "/image/**", "/uploads/**").permitAll()  // 로그인 페이지와 회원가입 요청은 모두 허용
                         .requestMatchers("/reissue").permitAll()
                        .requestMatchers("/basic/items").hasRole("USER")
+                        .requestMatchers("/basic/chat").hasRole("USER")
                         .requestMatchers("/basic/items/add").hasRole("USER")
                         .requestMatchers("/purchase/**").hasRole("USER")
                         .anyRequest().authenticated()
@@ -82,6 +86,6 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+        
     }
-
 }
