@@ -10,7 +10,6 @@ import com.example.product.usecase.ItemSelectOneUseCase;
 import com.example.product.usecase.ItemUpdateUseCase;
 import com.example.product.usecase.ItemDeleteUseCase;
 import com.example.user.login.security.dto.CustomMemberDetails;
-import jakarta.validation.Path;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,17 +19,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.IOException;
-
 import java.net.MalformedURLException;
-import java.nio.file.Paths;
 import java.util.List;
 
 @Slf4j
@@ -140,5 +135,23 @@ public class ItemController {
     public String delete(@PathVariable Long itemId) {
         itemDeleteUseCase.delete(itemId);
         return "redirect:/basic/items";
+    }
+
+    @GetMapping("/{itemId}/chat")
+    public String chatPage(@PathVariable Long itemId, @AuthenticationPrincipal CustomMemberDetails memberDetails, Model model) {
+        Item item = itemSelectOneUseCase.findById(itemId);
+
+        // 상품 등록자의 userId를 receiverId로 설정
+        Long chatRoomId = itemId;
+        String receiverId = String.valueOf(item.getUserId());
+        String senderId = memberDetails.getUsername(); // JWT 쿠키에서 가져온 로그인한 유저 ID
+
+        model.addAttribute("chatRoomId", itemId);           // chatRoomId로 사용
+        model.addAttribute("senderId", senderId);       // 현재 로그인한 유저
+        model.addAttribute("receiverId", receiverId);   // 상품 등록자
+        System.out.println(itemId);
+        System.out.println(receiverId);
+        System.out.println(senderId);
+        return "basic/chat";
     }
 }
