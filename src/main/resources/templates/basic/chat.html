@@ -1,0 +1,190 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <link th:href="@{/css/bootstrap.min.css}" href="../css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .navbar .logo a {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ff8a3d;
+            text-decoration: none;
+        }
+
+        .chat-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-window {
+            height: 400px;
+            border: 1px solid #ddd;
+            overflow-y: scroll;
+            padding: 15px;
+            background-color: #fafafa;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 60%;
+            word-wrap: break-word;
+        }
+
+        .my-message {
+            background-color: #ff8a3d;
+            color: #fff;
+            align-self: flex-end;
+        }
+
+        .other-message {
+            align-self: flex-start;
+        }
+
+        .input-group {
+            display: flex;
+            margin-top: 10px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px 0 0 5px;
+        }
+
+        .input-group button {
+            padding: 10px 20px;
+            background-color: #ff8a3d;
+            border: none;
+            color: #fff;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+        }
+
+        .input-group button:hover {
+            background-color: #ff7a00;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <div class="logo">
+        <a href="/basic/items">DEALLY</a>
+    </div>
+    <button onclick="location.href='/basic/items'">목록으로</button>
+</div>
+
+<div class="chat-container">
+    <h2>채팅방</h2>
+    <div class="chat-window" id="chatWindow"></div>
+
+    <div class="input-group">
+        <input type="text" id="messageInput" placeholder="메시지를 입력하세요" onkeydown="handleKeyDown(event)">
+        <button onclick="sendMessage()">전송</button>
+    </div>
+</div>
+<script th:inline="javascript">
+    let socket;
+    const chatWindow = document.getElementById('chatWindow');
+    
+    const chatRoomId = [[${chatRoomId}]];
+    const senderId =  [[${senderId}]];
+    const receiverId =  [[${receiverId}]];
+
+    function connect() {
+        const missingParams = [];
+        if (!chatRoomId) missingParams.push("chatRoomId");
+        if (!senderId) missingParams.push("senderId");
+        if (!receiverId) missingParams.push("receiverId");
+
+        if (missingParams.length > 0) {
+            console.error(`⚠️ 누락된 파라미터: ${missingParams.join(", ")}`);
+            return;
+        }
+
+        socket = new WebSocket(`ws://localhost:8080/ws/chat?chatRoomId=${chatRoomId}&senderId=${senderId}&receiverId=${receiverId}`);
+
+        socket.onopen = function() {
+            console.log("✅ WebSocket 연결 완료");
+        };
+
+        socket.onmessage = function(event) {
+            const message = JSON.parse(event.data);
+            displayMessage(message.message, message.senderId === senderId);
+        };
+
+        socket.onclose = function() {
+            console.log("❌ WebSocket 연결 종료");
+        };
+
+        socket.onerror = function(error) {
+            console.error("WebSocket 에러 발생: ", error);
+        };
+    }
+
+    function sendMessage() {
+        const messageInput = document.getElementById('messageInput');
+        const message = messageInput.value;
+
+        if (message.trim() !== "") {
+            const chatMessage = {
+                messageType: "TALK",
+                chatRoomId: chatRoomId,
+                senderId: senderId,
+                receiverId: receiverId,
+                message: message
+            };
+
+            socket.send(JSON.stringify(chatMessage));
+            displayMessage(message, true);
+            messageInput.value = "";
+        }
+    }
+
+    function handleKeyDown(event) {
+        if (event.key === 'Enter') {
+            sendMessage();
+        }
+    }
+
+    function displayMessage(message, isMine) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message');
+        messageDiv.classList.add(isMine ? 'my-message' : 'other-message');
+
+        messageDiv.textContent = message;
+        chatWindow.appendChild(messageDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    window.onload = connect;
+</script>
+</body>
+</html>

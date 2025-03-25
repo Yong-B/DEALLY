@@ -58,12 +58,12 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/","/login", "/member/**", "/css/**", "/js/**", "/image/**", "/uploads/**").permitAll()  // 로그인 페이지와 회원가입 요청은 모두 허용
+                        .requestMatchers("/", "/login", "/member/**", "/css/**", "/js/**", "/image/**", "/uploads/**").permitAll()  // 로그인 페이지와 회원가입 요청은 모두 허용
                         .requestMatchers("/reissue").permitAll()
-                       .requestMatchers("/basic/items").hasRole("USER")
-                        .requestMatchers("/basic/chat").hasRole("USER")
+                        .requestMatchers("/basic/items").hasRole("USER")
                         .requestMatchers("/basic/items/add").hasRole("USER")
-                        .requestMatchers("/purchase/**").hasRole("USER")
+                        .requestMatchers("/basic/items/chat").hasRole("USER")
+                        .requestMatchers("/ws/chat").permitAll()
                         .anyRequest().authenticated()
                 );
 
