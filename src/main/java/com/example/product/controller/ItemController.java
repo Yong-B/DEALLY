@@ -115,6 +115,7 @@ public class ItemController {
 
     @GetMapping("/add")
     public String addForm() {
+        
         return "basic/addForm";
     }
 
@@ -135,23 +136,5 @@ public class ItemController {
     public String delete(@PathVariable Long itemId) {
         itemDeleteUseCase.delete(itemId);
         return "redirect:/basic/items";
-    }
-
-    @GetMapping("/{itemId}/chat")
-    public String chatPage(@PathVariable Long itemId, @AuthenticationPrincipal CustomMemberDetails memberDetails, Model model) {
-        Item item = itemSelectOneUseCase.findById(itemId);
-
-        // 상품 등록자의 userId를 receiverId로 설정
-        Long chatRoomId = itemId;
-        String receiverId = String.valueOf(item.getUserId());
-        String senderId = memberDetails.getUsername(); // JWT 쿠키에서 가져온 로그인한 유저 ID
-
-        model.addAttribute("chatRoomId", itemId);           // chatRoomId로 사용
-        model.addAttribute("senderId", senderId);       // 현재 로그인한 유저
-        model.addAttribute("receiverId", receiverId);   // 상품 등록자
-        System.out.println(itemId);
-        System.out.println(receiverId);
-        System.out.println(senderId);
-        return "basic/chat";
     }
 }

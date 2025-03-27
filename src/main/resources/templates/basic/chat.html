@@ -110,25 +110,36 @@
         <button onclick="sendMessage()">전송</button>
     </div>
 </div>
+
 <script th:inline="javascript">
     let socket;
     const chatWindow = document.getElementById('chatWindow');
-    
+
     const chatRoomId = [[${chatRoomId}]];
     const senderId =  [[${senderId}]];
     const receiverId =  [[${receiverId}]];
 
+    // Load messages from the server
+    function loadMessages() {
+    console.log('Loading messages for chatRoomId:', chatRoomId);
+    fetch(`/chatroom/${chatRoomId}`)
+        .then(response => {
+            console.log('Response status:', response.status);
+            return response.json();
+        })
+        .then(messages => {
+            console.log('Received messages:', messages);
+            chatWindow.innerHTML = '';
+            
+            messages.forEach(message => {
+                console.log('Processing message:', message);
+                displayMessage(message.message, message.senderId === senderId);
+            });
+        })
+        .catch(err => console.error('Failed to load messages:', err));
+}
+
     function connect() {
-        const missingParams = [];
-        if (!chatRoomId) missingParams.push("chatRoomId");
-        if (!senderId) missingParams.push("senderId");
-        if (!receiverId) missingParams.push("receiverId");
-
-        if (missingParams.length > 0) {
-            console.error(`⚠️ 누락된 파라미터: ${missingParams.join(", ")}`);
-            return;
-        }
-
         socket = new WebSocket(`ws://localhost:8080/ws/chat?chatRoomId=${chatRoomId}&senderId=${senderId}&receiverId=${receiverId}`);
 
         socket.onopen = function() {
@@ -184,7 +195,10 @@
         chatWindow.scrollTop = chatWindow.scrollHeight;
     }
 
-    window.onload = connect;
+    window.onload = function() {
+    loadMessages();  // 먼저 이전 메시지들을 로드
+    connect();       // 그 다음 웹소켓 연결
+};
 </script>
 </body>
 </html>

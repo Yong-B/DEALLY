@@ -64,6 +64,7 @@ public class SecurityConfig {
                         .requestMatchers("/basic/items/add").hasRole("USER")
                         .requestMatchers("/basic/items/chat").hasRole("USER")
                         .requestMatchers("/ws/chat").permitAll()
+                        .requestMatchers("/chatroom/**").permitAll()
                         .anyRequest().authenticated()
                 );
 

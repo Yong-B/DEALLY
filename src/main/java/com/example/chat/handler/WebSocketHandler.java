@@ -1,6 +1,10 @@
 package com.example.chat.handler;
 
 import com.example.chat.controller.dto.ChatMessageDto;
+import com.example.chat.domain.ChatRoom;
+import com.example.chat.repository.ChatRoomRepository;
+import com.example.chat.repository.MessageRepository;
+import com.example.chat.service.ChatService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +14,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -20,6 +25,9 @@ import java.util.Set;
 public class WebSocketHandler extends TextWebSocketHandler {
 
     private final ObjectMapper mapper;
+    private final ChatService chatService;
+    private final ChatRoomRepository chatRoomRepository;
+    private final MessageRepository messageRepository;
 
     // 현재 연결된 세션들
     private final Map<Long, Set<WebSocketSession>> chatRoomSessionMap = new HashMap<>();
@@ -30,11 +38,14 @@ public class WebSocketHandler extends TextWebSocketHandler {
         Map<String, String> params = getQueryParams(session);
 
         Long chatRoomId = Long.valueOf(params.get("chatRoomId"));    // itemId
-        Long senderId = Long.valueOf(params.get("senderId"));        // 로그인 유저
-        Long receiverId = Long.valueOf(params.get("receiverId"));    // 상품 등록자
+        String senderId = String.valueOf(params.get("senderId"));        // 로그인 유저
+        String receiverId = String.valueOf(params.get("receiverId"));    // 상품 등록자
 
         log.info("✅ WebSocket 연결됨 - chatRoomId: {}, senderId: {}, receiverId: {}",
                 chatRoomId, senderId, receiverId);
+
+        ChatRoom chatRoom = chatRoomRepository.findByChatRoomId(chatRoomId)
+                .orElseGet(() -> createChatRoom(chatRoomId, senderId, receiverId));
 
         // 채팅방 세션 관리
         chatRoomSessionMap.putIfAbsent(chatRoomId, new HashSet<>());
@@ -56,6 +67,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
             log.warn("⚠️ 채팅방 없음: {}", chatRoomId);
             return;
         }
+
+        // 메시지 DB 저장
+        chatService.saveMessage(chatMessageDto); // 여기서 메시지를 저장하도록 함
 
         // 1:1 채팅에서 수신자만 메시지 수신
         Set<WebSocketSession> chatRoomSession = chatRoomSessionMap.get(chatRoomId);
@@ -104,5 +118,18 @@ public class WebSocketHandler extends TextWebSocketHandler {
         } catch (IOException e) {
             log.error("⚠️ 메시지 전송 중 에러 발생: {}", e.getMessage(), e);
         }
+    }
+
+    private ChatRoom createChatRoom(Long chatRoomId, String senderId, String receiverId) {
+        // 새로운 채팅방 생성
+        ChatRoom chatRoom = ChatRoom.builder()
+                .chatRoomId(chatRoomId)
+                .senderId(senderId.toString())
+                .receiverId(receiverId.toString())
+                .createdAt(LocalDateTime.now())  // 채팅방 생성 시간
+                .build();
+
+        // 채팅방 저장
+        return chatRoomRepository.save(chatRoom);
     }
 }
