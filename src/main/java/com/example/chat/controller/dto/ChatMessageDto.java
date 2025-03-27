@@ -1,5 +1,6 @@
 package com.example.chat.controller.dto;
 
+import io.jsonwebtoken.security.Message;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,11 +20,10 @@ public class ChatMessageDto {
     
     private Long chatRoomId; // 방 번호
     
-    private Long senderId; // 채팅을 보낸 사람
+    private String senderId; // 채팅을 보낸 사람
 
-    private Long receiverId;
+    private String receiverId;
 
     private String message;
-    
-  
+
 }
