@@ -105,8 +105,11 @@ public class ItemController {
         Item item = itemSelectOneUseCase.findById(itemId);
         model.addAttribute("item", item);
 
+        if (memberDetails == null) {
+            return "purchase/item-purchase";
+        }
+        
         String loginId = memberDetails.getUsername();
-
         String ownerId = String.valueOf(item.getUserId());
 
         return loginId.equals(ownerId) ? "basic/item" : "purchase/item-purchase";

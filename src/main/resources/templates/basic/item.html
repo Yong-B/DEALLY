@@ -147,7 +147,7 @@
     </div>
     <div class="mb-3">
         <label for="price">가격</label>
-        <input type="text" id="price" name="price" class="form-control" value="10000" th:value="${item.price}" readonly>
+        <input type="text" id="price" name="price" class="form-control" value="10000" th:value="${#numbers.formatInteger(item.price, 0, 'COMMA')}"  readonly>
     </div>
     <div class="mb-3">
         <label for="quantity">수량</label>

@@ -124,7 +124,7 @@
             border-radius: 10px;
             border: 1px solid #ddd;
 }
-        
+
     </style>
 </head>
 <body>
@@ -168,7 +168,7 @@
         </div>
         <div class="mb-3">
             <label for="price">가격</label>
-            <input type="text" id="price" name="price" class="form-control" value="10000" th:value="${item.price}">
+            <input type="text" id="price" name="price" class="form-control" value="10000" th:value="${#numbers.formatInteger(item.price, 0, 'COMMA')}">
         </div>
         <div class="mb-3">
             <label for="quantity">수량</label>
