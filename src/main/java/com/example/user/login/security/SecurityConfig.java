@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -60,9 +61,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/", "/login", "/member/**", "/css/**", "/js/**", "/image/**", "/uploads/**").permitAll()  // 로그인 페이지와 회원가입 요청은 모두 허용
                         .requestMatchers("/reissue").permitAll()
-                        .requestMatchers("/basic/items").hasRole("USER")
+                        .requestMatchers("/basic/items").permitAll()
+                        .requestMatchers("/basic/items/images/**").permitAll() // 상품 이미지
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/basic/items/{itemID}")).permitAll()
                         .requestMatchers("/basic/items/add").hasRole("USER")
                         .requestMatchers("/basic/items/chat").hasRole("USER")
+                        .requestMatchers("/basic/chatroom/**").hasRole("USER")
                         .requestMatchers("/ws/chat").permitAll()
                         .requestMatchers("/chatroom/**").permitAll()
                         .anyRequest().authenticated()

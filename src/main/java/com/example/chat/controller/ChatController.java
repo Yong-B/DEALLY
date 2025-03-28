@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -43,5 +44,17 @@ public class ChatController {
     @ResponseBody
     public List<Message> getMessages(@PathVariable Long chatRoomId) {
         return chatService.getMessages(chatRoomId);
+    }
+
+
+    @GetMapping("/basic/chatroom")
+    public String chatRoomList(@AuthenticationPrincipal CustomMemberDetails memberDetails, Model model) {
+        String userId = memberDetails.getUsername();
+
+        // 사용자의 채팅방 목록 조회 로직
+        List<Map<String, Object>> chatRoomsData = chatService.getChatRoomsWithItemInfo(userId);
+        model.addAttribute("chatRooms", chatRoomsData);
+
+        return "basic/chatroom";  // HTML 템플릿 경로
     }
 }

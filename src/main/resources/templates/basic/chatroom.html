@@ -1,0 +1,111 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:href="@{/css/bootstrap.min.css}" href="../css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .navbar .logo a {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ff8a3d;
+            text-decoration: none;
+        }
+
+        .chatroom-container {
+            max-width: 800px;
+            margin: 50px auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .chatroom-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .chatroom-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .chatroom-item:hover {
+            background-color: #ffead6;
+        }
+
+        .chatroom-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .last-message {
+            color: #777;
+            font-size: 14px;
+        }
+
+        .timestamp {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .no-chatrooms {
+            text-align: center;
+            color: #777;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <div class="logo">
+        <a href="/basic/items">DEALLY</a>
+    </div>
+    <button onclick="location.href='/basic/items'">목록으로</button>
+</div>
+
+<div class="chatroom-container">
+    <h2>채팅방 목록</h2>
+    <ul class="chatroom-list" id="chatroomList">
+        <li th:each="chatRoom : ${chatRooms}" class="chatroom-item"
+            th:onclick="|location.href='/basic/items/' + ${chatRoom.itemId} + '/chat'|">
+            <div>
+                <div class="chatroom-title" th:text="${chatRoom.itemName}">상품 이름</div>
+                <div class="last-message" th:text="${chatRoom.lastMessage}">마지막 메시지</div>
+            </div>
+            <div class="timestamp" th:text="${chatRoom.lastTimestamp}"></div>
+        </li>
+    </ul>
+
+    <div class="no-chatrooms" th:if="${chatRooms.size() == 0}">
+        참여 중인 채팅방이 없습니다.
+    </div>
+</div>
+
+</body>
+</html>
