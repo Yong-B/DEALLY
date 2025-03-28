@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +22,7 @@ public class ChatController {
 
     private final ItemSelectOneUseCase itemSelectOneUseCase;
     private final ChatService chatService;
-    
+
     @GetMapping("/basic/items/{itemId}/chat")
     public String chatPage(@PathVariable Long itemId, @AuthenticationPrincipal CustomMemberDetails memberDetails, Model model) {
         Item item = itemSelectOneUseCase.findById(itemId);
@@ -39,10 +41,8 @@ public class ChatController {
 
     @GetMapping("/chatroom/{chatRoomId}")
     @ResponseBody
-    public List<Message> getMessages(@PathVariable Long chatRoomId,
-                                     @RequestParam String senderId,
-                                     @RequestParam String receiverId) {
-        return chatService.getMessages(chatRoomId, senderId, receiverId);
+    public List<Message> getMessages(@PathVariable Long chatRoomId) {
+        return chatService.getMessages(chatRoomId);
     }
 
 
