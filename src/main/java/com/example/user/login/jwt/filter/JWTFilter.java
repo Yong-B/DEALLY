@@ -69,10 +69,10 @@ public class JWTFilter extends OncePerRequestFilter {
         Authentication authToken = new UsernamePasswordAuthenticationToken(customMemberDetails, null, customMemberDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
-        System.out.println("SecurityContext updated with user: " + loginId);    
+        System.out.println("SecurityContext updated with user: " + loginId);
 
         filterChain.doFilter(request, response);
-        
+
     }
 
     private String getTokenFromCookie(HttpServletRequest request) {

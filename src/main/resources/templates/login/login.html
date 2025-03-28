@@ -182,47 +182,48 @@
             icon.classList.replace("fa-eye-slash", "fa-eye");
         }
     }
-
-    // ✅ 로그인 시 아이디 저장 기능
+// 로그인 폼 제출 처리
     document.getElementById("loginForm").addEventListener("submit", async function(event) {
-        event.preventDefault(); 
+    event.preventDefault(); 
 
-        let loginId = document.getElementById("loginId").value;
-        let password = document.getElementById("password").value;
-        let rememberMe = document.getElementById("rememberMe").checked;
+    let loginId = document.getElementById("loginId").value;
+    let password = document.getElementById("password").value;
+    let rememberMe = document.getElementById("rememberMe").checked;
 
-        try {
-            let response = await fetch("/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ loginId, password }),
-                credentials: "include"
-            });
+    try {
+        let response = await fetch("/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ loginId, password }),
+            credentials: "include"
+        });
 
-            if (!response.ok) {
-                document.getElementById("error-message").style.display = "block";
-                throw new Error("Login failed");
-            }
-
-            if (rememberMe) {
-                localStorage.setItem("savedLoginId", loginId);
-            } else {
-                localStorage.removeItem("savedLoginId");
-            }
-
-            window.location.href = "/basic/items";
-        } catch (error) {
-            console.error("Error:", error);
+        if (!response.ok) {
+            document.getElementById("error-message").style.display = "block";
+            throw new Error("Login failed");
         }
-    });
 
-    window.onload = function() {
-        let savedLoginId = localStorage.getItem("savedLoginId");
-        if (savedLoginId) {
-            document.getElementById("loginId").value = savedLoginId;
-            document.getElementById("rememberMe").checked = true;
+        // Authorization 헤더에서 토큰 추출
+        const authHeader = response.headers.get("Authorization");
+        if (authHeader && authHeader.startsWith("Bearer ")) {
+            const accessToken = authHeader.substring(7); // "Bearer " 제거
+            localStorage.setItem("accessToken", accessToken);
+            console.log("Access token saved to localStorage");
+        } else {
+            console.error("No valid Authorization header found");
         }
-    };
+
+        if (rememberMe) {
+            localStorage.setItem("savedLoginId", loginId);
+        } else {
+            localStorage.removeItem("savedLoginId");
+        }
+
+        window.location.href = "/basic/items";
+    } catch (error) {
+        console.error("Error:", error);
+    }
+});
 </script>
 
 </body>

@@ -20,15 +20,15 @@ public class ReissueService {
     private final JWTUtil jwtUtil;
     private final CookieUtil cookieUtil;
     private final RefreshRepository refreshRepository;
-    
+
     public ReissueService(JWTUtil jwtUtil, CookieUtil cookieUtil, RefreshRepository refreshRepository) {
-        
+
         this.jwtUtil = jwtUtil;
         this.cookieUtil = cookieUtil;
         this.refreshRepository = refreshRepository;
     }
-    
-    
+
+
 
     public ResponseEntity<?> reissueToken(HttpServletRequest request, HttpServletResponse response) {
 
@@ -43,14 +43,14 @@ public class ReissueService {
             jwtUtil.isExpired(refresh);
         } catch (ExpiredJwtException e) {
             return new ResponseEntity<>("refresh token expired", HttpStatus.BAD_REQUEST);
-        } 
+        }
 
         // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
         String category = jwtUtil.getCategory(refresh);
         if (!category.equals("refresh")) {
             return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
-        
+
         //DB에 저장되어 있는지 확인
         Boolean isExist = refreshRepository.existsByRefresh(refresh);
         if (!isExist) {
@@ -58,7 +58,7 @@ public class ReissueService {
             //response body
             return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
-        
+
         // 새로운 액세스 토큰 발급
         String loginId = jwtUtil.getUsername(refresh);
         String role = jwtUtil.getRole(refresh);
@@ -71,7 +71,7 @@ public class ReissueService {
         // response 헤더에 추가
         response.setHeader("access", newAccess);
         response.addCookie(cookieUtil.createCookie("refresh", newRefresh));
-        
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -87,8 +87,8 @@ public class ReissueService {
 
         refreshRepository.save(refreshToken);
     }
-    
-    
+
+
     private String extractRefreshToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {

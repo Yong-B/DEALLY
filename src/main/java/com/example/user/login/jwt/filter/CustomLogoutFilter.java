@@ -27,7 +27,7 @@ public class CustomLogoutFilter extends GenericFilter {
 
         doFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);
     }
-    
+
     private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException,ServletException {
 
         String requestUri = request.getRequestURI();

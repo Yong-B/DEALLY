@@ -69,6 +69,7 @@ public class SecurityConfig {
                         .requestMatchers("/basic/chatroom/**").hasRole("USER")
                         .requestMatchers("/ws/chat").permitAll()
                         .requestMatchers("/chatroom/**").permitAll()
+                        .requestMatchers("/member/check-login").permitAll()  // 추가
                         .anyRequest().authenticated()
                 );
 
@@ -91,6 +92,6 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-        
+
     }
 }

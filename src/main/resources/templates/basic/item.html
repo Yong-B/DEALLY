@@ -111,10 +111,98 @@
         .col {
             flex: 1;
         }
+        /* 로그인 모달 스타일 */
+        .login-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-modal-content {
+    position: relative;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 350px; /* 너비 증가 */
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    word-break: keep-all; /* 단어 단위로 줄바꿈 */
+    word-wrap: break-word; /* 긴 단어 줄바꿈 */
+}
+
+.login-modal-content h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.login-modal-content p {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.login-modal-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.login-modal-buttons button {
+    padding: 14px;
+    border-radius: 5px;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.login-modal-buttons .login-btn {
+    background-color: #ff8a3d;
+    color: white;
+    font-weight: bold;
+}
+
+.login-modal-buttons .login-btn:hover {
+    background-color: #ff702d;
+    transform: translateY(-2px);
+}
+
+.login-modal-buttons .register-btn {
+    background-color: #f1f1f1;
+    color: #333;
+}
+
+.login-modal-buttons .register-btn:hover {
+    background-color: #e1e1e1;
+    transform: translateY(-2px);
+}
+
+.login-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #aaa;
+    transition: color 0.2s;
+}
+
+.login-modal-close:hover {
+    color: #333;
+}
     </style>
 </head>
 <body>
-
 <div class="navbar">
     <div class="logo">
         <a th:href="@{/basic/items}">DEALLY</a>
@@ -124,8 +212,21 @@
         <button class="btn btn btn-primary" type="submit">검색</button>
     </form>
     <div class="nav-buttons">
-        <button class="btn btn btn-primary" onclick="location.href='/mypage'" th:onclick="|location.href='@{/mypage}'|">마이페이지</button>
-        <button class="btn btn-secondary" onclick="logout()">로그아웃</button>
+        <button class="btn btn btn-primary" onclick="checkLoginBeforeAction('/mypage')">마이페이지</button>
+        <button class="btn btn-secondary" id="authButton">로그인</button>
+    </div>
+</div>
+
+<!-- 로그인 모달 추가 -->
+<div class="login-modal" id="loginModal">
+    <div class="login-modal-content">
+        <span class="login-modal-close" onclick="closeLoginModal()">&times;</span>
+        <h3>로그인이 필요합니다</h3>
+        <p>이 기능을 사용하려면 로그인이 필요합니다.</p>
+        <div class="login-modal-buttons">
+            <button class="login-btn" onclick="location.href='/login'">로그인</button>
+            <button class="register-btn" onclick="location.href='/member/add'">회원가입</button>
+        </div>
     </div>
 </div>
 
@@ -173,6 +274,73 @@
 
 </div>
 <script>
+    // 페이지 로드 시 로그인 상태 확인
+    document.addEventListener('DOMContentLoaded', function() {
+        checkLoginStatus();
+    });
+    
+    // 로그인 상태 확인 함수
+    async function checkLoginStatus() {
+        try {
+            const response = await fetch('/member/check-login', {
+                method: 'GET',
+                credentials: 'include'
+            });
+            
+            const authButton = document.getElementById('authButton');
+            
+            if (response.ok) {
+                // 로그인 상태
+                console.log("로그인 상태 확인: 로그인됨");
+                authButton.textContent = '로그아웃';
+                authButton.onclick = logout;
+            } else {
+                // 비로그인 상태
+                console.log("로그인 상태 확인: 로그인되지 않음");
+                authButton.textContent = '로그인';
+                authButton.onclick = showLoginModal;
+            }
+        } catch (error) {
+            console.error("로그인 상태 확인 중 에러:", error);
+        }
+    }
+    
+    // 로그인 필요한 액션 전 체크
+    async function checkLoginBeforeAction(url) {
+        try {
+            const response = await fetch('/member/check-login', {
+                method: 'GET',
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                // 로그인 상태면 바로 이동
+                location.href = url;
+            } else {
+                // 비로그인 상태면 모달 표시
+                const modal = document.getElementById('loginModal');
+                modal.style.display = 'flex';
+            }
+        } catch (error) {
+            console.error("로그인 상태 확인 중 에러:", error);
+            const modal = document.getElementById('loginModal');
+            modal.style.display = 'flex';
+        }
+    }
+    
+    // 로그인 모달 표시
+    function showLoginModal() {
+        const modal = document.getElementById('loginModal');
+        modal.style.display = 'flex';
+    }
+    
+    // 로그인 모달 닫기
+    function closeLoginModal() {
+        const modal = document.getElementById('loginModal');
+        modal.style.display = 'none';
+    }
+    
+    // 로그아웃 기능
     async function logout() {
         try {
             let response = await fetch("/logout", {
@@ -180,7 +348,6 @@
                 credentials: "include"
             });
             if (response.ok || response.status === 400) {
-                localStorage.removeItem("accessToken");
                 window.location.href = "/login";
             } else {
                 console.error("Logout failed");
@@ -189,6 +356,14 @@
             console.error("Error during logout", error);
         }
     }
-</script>>
+    
+    // 모달 외부 클릭 시 닫기
+    window.onclick = function(event) {
+        const modal = document.getElementById('loginModal');
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+</script>
 </body>
 </html>

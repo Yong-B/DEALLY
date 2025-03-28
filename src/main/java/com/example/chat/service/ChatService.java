@@ -20,6 +20,7 @@ import java.util.*;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class ChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final MessageRepository messageRepository;
@@ -27,41 +28,69 @@ public class ChatService {
     // 채팅방에 메시지 저장
     @Transactional
     public void saveMessage(ChatMessageDto chatMessageDto) {
-        // 채팅방 조회
-        ChatRoom chatRoom = chatRoomRepository.findByChatRoomId(chatMessageDto.getChatRoomId())
-                .orElseThrow(() -> new RuntimeException("채팅방을 찾을 수 없습니다"));
+        // 채팅방 조회 또는 생성
+        ChatRoom chatRoom = chatRoomRepository.findByChatRoomIdAndSenderIdAndReceiverId(
+                chatMessageDto.getChatRoomId(),
+                chatMessageDto.getSenderId(),
+                chatMessageDto.getReceiverId()
+        ).orElseGet(() -> createNewChatRoom(
+                chatMessageDto.getChatRoomId(),
+                chatMessageDto.getSenderId(),
+                chatMessageDto.getReceiverId()
+        ));
 
-        // 메시지 생성
         Message message = Message.builder()
                 .chatRoom(chatRoom)
-                .senderId(chatMessageDto.getSenderId().toString())
+                .senderId(chatMessageDto.getSenderId())
                 .message(chatMessageDto.getMessage())
                 .build();
 
-        // 메시지 저장
         messageRepository.save(message);
     }
-
-    // 채팅방의 메시지 목록 조회
     @Transactional
-    public List<Message> getMessages(Long chatRoomId) {
-        return messageRepository.findByChatRoomId(chatRoomId);
+    private ChatRoom createNewChatRoom(Long chatRoomId, String senderId, String receiverId) {
+        ChatRoom newRoom = ChatRoom.builder()
+                .chatRoomId(chatRoomId)  // 기존 필드명 유지
+                .senderId(senderId)
+                .receiverId(receiverId)
+                .build();
+        return chatRoomRepository.save(newRoom);
     }
+
+    // 메시지 조회 수정
+    @Transactional
+    public List<Message> getMessages(Long chatRoomId, String senderId, String receiverId) {
+        ChatRoom chatRoom = chatRoomRepository.findByChatRoomIdAndSenderIdAndReceiverId(
+                chatRoomId, senderId, receiverId
+        ).orElse(null);
+
+        if (chatRoom == null) {
+            return new ArrayList<>();
+        }
+
+        return messageRepository.findByChatRoomId(chatRoom.getChatRoomId());
+    }
+
     
     @Autowired
     private ItemSelectOneUseCase itemSelectOneUseCase;  // 상품 정보 조회용
 
     @Transactional(readOnly = true)
     public List<Map<String, Object>> getChatRoomsWithItemInfo(String userId) {
-        // 사용자가 참여한 채팅방 목록 조회
-        List<ChatRoom> chatRooms = chatRoomRepository.findBySenderIdOrReceiverId(userId, userId);
+        // userId를 한 번만 전달 (동일한 값을 두 번 전달하지 않음)
+        List<ChatRoom> chatRooms = chatRoomRepository.findBySenderIdOrReceiverId(userId);
         List<Map<String, Object>> result = new ArrayList<>();
 
         for (ChatRoom room : chatRooms) {
             Map<String, Object> data = new HashMap<>();
             data.put("itemId", room.getChatRoomId());
 
-            // 상품 정보 조회
+            // 채팅 상대방 정보 추가
+            String otherUserId = userId.equals(room.getSenderId()) ?
+                    room.getReceiverId() : room.getSenderId();
+            data.put("otherUserId", otherUserId);
+
+            // 나머지 코드는 동일
             try {
                 Item item = itemSelectOneUseCase.findById(room.getChatRoomId());
                 data.put("itemName", item.getItemName());

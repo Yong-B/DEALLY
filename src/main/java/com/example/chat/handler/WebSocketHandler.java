@@ -44,7 +44,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         log.info("✅ WebSocket 연결됨 - chatRoomId: {}, senderId: {}, receiverId: {}",
                 chatRoomId, senderId, receiverId);
 
-        ChatRoom chatRoom = chatRoomRepository.findByChatRoomId(chatRoomId)
+        ChatRoom chatRoom = chatRoomRepository.findByChatRoomIdAndSenderIdAndReceiverId(chatRoomId, senderId, receiverId)
                 .orElseGet(() -> createChatRoom(chatRoomId, senderId, receiverId));
 
         // 채팅방 세션 관리

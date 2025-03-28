@@ -31,7 +31,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final JWTUtil jwtUtil;
     private final CookieUtil cookieUtil;
     private final RefreshRepository refreshRepository;
-    
+
     public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, CookieUtil cookieUtil, RefreshRepository refreshRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
@@ -72,7 +72,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // JWT 생성
         String access = jwtUtil.createJwt("access", loginId, role, 600000L);
         String refresh = jwtUtil.createJwt("refresh", loginId, role, 86400000L);
-        
+
         //Refresh 토큰 저장
         addRefreshToken(loginId, refresh, 86400000L);
 
@@ -81,12 +81,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.addCookie(cookieUtil.createCookie("refresh", refresh));
         response.addCookie(cookieUtil.createCookie("access", access));
         response.setStatus(HttpStatus.OK.value());
-        
+
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
-       response.setStatus(403);
+        response.setStatus(403);
     }
 
     private void addRefreshToken(String username, String refresh, Long expiredMs) {
