@@ -11,17 +11,19 @@ import java.util.List;
 @Getter
 @Builder
 @AllArgsConstructor
+@Table(name = "chat_room")
 public class ChatRoom {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column( nullable = false)
     private Long chatRoomId;       // 채팅방 ID (상품 ID)
     private String  senderId;         // 보낸 사람 ID
     private String  receiverId;       // 받는 사람 ID
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<Message> messages = new ArrayList<>();
 
     private LocalDateTime createdAt;  // 메시지 보낸 시간

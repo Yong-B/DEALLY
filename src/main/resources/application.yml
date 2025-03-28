@@ -7,12 +7,14 @@ spring:
 
     # connection pool (usage: hikari pool)
     hikari:
-      connection-timeout: 30_000
-      idle-timeout: 60_000
-      max-lifetime: 1_800_000
-      maximum-pool-size: 300
+      connection-timeout: 30000  # 30초
+      idle-timeout: 600000      # 10분
+      max-lifetime: 1800000     # 30분
+      maximum-pool-size: 10     # 300은 너무 큽니다. 일반적인 웹 애플리케이션의 경우 10-20 정도면 충분
       minimum-idle: 5
-      leak-detection-threshold: 2000
+      leak-detection-threshold: 30000  # 30초로 증가
+      auto-commit: true
+      connection-test-query: SELECT 1
 
   jpa:
     properties:

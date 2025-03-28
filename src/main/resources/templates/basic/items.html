@@ -240,7 +240,6 @@
         </div>
     </div>
 </div>
-
 <script th:inline="javascript">
     // 페이지 로드 시 로그인 상태 확인
     document.addEventListener('DOMContentLoaded', function() {
@@ -249,49 +248,64 @@
     
     // 로그인 상태 확인 함수
     async function checkLoginStatus() {
-        const accessToken = localStorage.getItem("accessToken");
-        
-        // 로그인 상태 버튼 설정
-        const authButton = document.getElementById('authButton');
-        
-        if (accessToken) {
-            // 로그인 상태
-            authButton.textContent = '로그아웃';
-            authButton.onclick = logout;
-        } else {
-            // 비로그인 상태
-            authButton.textContent = '로그인';
-            authButton.onclick = showLoginModal;
+        try {
+            const response = await fetch('/member/check-login', {
+                method: 'GET',
+                credentials: 'include'  // 쿠키 포함
+            });
+            
+            const authButton = document.getElementById('authButton');
+            
+            if (response.ok) {
+                // 로그인 상태
+                console.log("로그인 상태 확인: 로그인됨");
+                authButton.textContent = '로그아웃';
+                authButton.onclick = logout;
+            } else {
+                // 비로그인 상태
+                console.log("로그인 상태 확인: 로그인되지 않음");
+                authButton.textContent = '로그인';
+                authButton.onclick = showLoginModal;
+            }
+        } catch (error) {
+            console.error("로그인 상태 확인 중 에러:", error);
         }
     }
     
     // 로그인 필요한 액션 전 체크
-    function checkLoginBeforeAction(url) {
-        const accessToken = localStorage.getItem("accessToken");
-        
-        if (accessToken) {
-            // 로그인 상태면 바로 이동
-            location.href = url;
-        } else {
-            // 비로그인 상태면 모달 표시
+    async function checkLoginBeforeAction(url) {
+        try {
+            const response = await fetch('/member/check-login', {
+                method: 'GET',
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                // 로그인 상태면 바로 이동
+                location.href = url;
+            } else {
+                // 비로그인 상태면 모달 표시
+                const modal = document.getElementById('loginModal');
+                modal.style.display = 'flex';
+            }
+        } catch (error) {
+            console.error("로그인 상태 확인 중 에러:", error);
             const modal = document.getElementById('loginModal');
             modal.style.display = 'flex';
         }
     }
     
-    // 로그인 모달 표시
+    // 나머지 함수들은 그대로 유지
     function showLoginModal() {
         const modal = document.getElementById('loginModal');
         modal.style.display = 'flex';
     }
     
-    // 로그인 모달 닫기
     function closeLoginModal() {
         const modal = document.getElementById('loginModal');
         modal.style.display = 'none';
     }
     
-    // 로그아웃 기능
     async function logout() {
         try {
             let response = await fetch("/logout", {
@@ -299,8 +313,6 @@
                 credentials: "include"
             });
             if (response.ok || response.status === 400) {
-                localStorage.removeItem("accessToken");
-                // 로그아웃 후 페이지 새로고침
                 window.location.reload();
             } else {
                 console.error("Logout failed");
@@ -310,52 +322,12 @@
         }
     }
     
-    // 모달 외부 클릭 시 닫기
     window.onclick = function(event) {
         const modal = document.getElementById('loginModal');
         if (event.target == modal) {
             modal.style.display = 'none';
         }
     }
-    
-    // 기존 fetchWithAccessToken 함수
-    async function fetchWithAccessToken(url, options = {}) {
-        let accessToken = localStorage.getItem("accessToken");
-        
-        if (accessToken) {
-            if (!options.headers) {
-                options.headers = {};
-            }
-            options.headers["access"] = accessToken;
-        }
-
-        let response = await fetch(url, options);
-
-        if (response.status === 401) {
-            console.log("Access token expired. Trying to reissue...");
-            let reissueResponse = await fetch("/reissue", {
-                method: "POST",
-                credentials: "include"
-            });
-
-            if (reissueResponse.ok) {
-                console.log("New access token issued. Retrying request...");
-                let newAccessToken = reissueResponse.headers.get("access");
-                
-                if (newAccessToken) {
-                    localStorage.setItem("accessToken", newAccessToken);
-                    options.headers["access"] = newAccessToken;
-                    response = await fetch(url, options);
-                }
-            } else {
-                console.log("Reissue failed. Redirecting to login...");
-                window.location.href = "/login";
-            }
-        }
-
-        return response;
-    }
 </script>
-
 </body>
 </html>
