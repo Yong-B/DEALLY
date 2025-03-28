@@ -160,24 +160,25 @@
     }
 
     // Load messages from the server
-   function loadMessages() {
-    console.log('Loading messages for chatRoomId:', chatRoomId);
-    fetch(`/chatroom/${chatRoomId}?senderId=${senderId}&receiverId=${receiverId}`)  // URL 파라미터 추가
-        .then(response => {
-            console.log('Response status:', response.status);
-            return response.json();
-        })
-        .then(messages => {
-            console.log('Received messages:', messages);
-            chatWindow.innerHTML = '';
-            
-            messages.forEach(message => {
-                console.log('Processing message:', message);
-                displayMessage(message.message, message.senderId === senderId);
-            });
-        })
-        .catch(err => console.error('Failed to load messages:', err));
-}
+    function loadMessages() {
+        console.log('Loading messages for chatRoomId:', chatRoomId);
+        fetch(`/chatroom/${chatRoomId}`)
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
+            .then(messages => {
+                console.log('Received messages:', messages);
+                chatWindow.innerHTML = '';
+                
+                messages.forEach(message => {
+                    console.log('Processing message:', message);
+                    displayMessage(message.message, message.senderId === senderId);
+                });
+            })
+            .catch(err => console.error('Failed to load messages:', err));
+    }
+
 
 function connect() {
     // WebSocket URL은 이미 올바르게 설정되어 있으므로 수정할 필요 없습니다
