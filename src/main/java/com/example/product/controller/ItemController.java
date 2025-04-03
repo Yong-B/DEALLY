@@ -49,7 +49,7 @@ public class ItemController {
                 .itemName(dto.itemName())
                 .price(dto.price())
                 .quantity(dto.quantity())
-                .userId(Long.valueOf(loginId))
+                .userId(loginId)
                 .build(); 
         
         itemSaveUseCase.save(item);
