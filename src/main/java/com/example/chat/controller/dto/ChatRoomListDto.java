@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 public class ChatRoomListDto {
-    private Long chatRoomId;      // 채팅방 ID (= 상품 ID)
+    private String chatRoomId;      // 채팅방 ID (= 상품 ID)
     private String itemName;      // 상품 이름
     private String lastMessage;   // 마지막 메시지
     private LocalDateTime lastTimestamp; // 마지막 메시지 시간

@@ -25,7 +25,7 @@ public class Item {
     private Integer quantity;
 
     @Column(name = "user_id", nullable = false)
-    private Long userId;
+    private String userId;
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<UploadFile> imagesFiles;
@@ -36,7 +36,7 @@ public class Item {
             builderMethodName = "prepareUpdate",
             buildMethodName = "update"
     )
-    public Item(String itemName, Float price, Integer quantity, Long userId) {
+    public Item(String itemName, Float price, Integer quantity, String userId) {
         
         this.itemName = itemName;
         this.price = price;

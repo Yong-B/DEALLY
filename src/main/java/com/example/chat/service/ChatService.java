@@ -45,7 +45,7 @@ public class ChatService {
 
     // 채팅방의 메시지 목록 조회
     @Transactional
-    public List<Message> getMessages(Long chatRoomId) {
+    public List<Message> getMessages(String chatRoomId) {
         return messageRepository.findByChatRoomId(chatRoomId);
     }
 
@@ -64,7 +64,7 @@ public class ChatService {
 
             // 상품 정보 조회
             try {
-                Item item = itemSelectOneUseCase.findById(room.getChatRoomId());
+                Item item = itemSelectOneUseCase.findById(Long.parseLong(room.getChatRoomId()));
                 data.put("itemName", item.getItemName());
             } catch (Exception e) {
                 data.put("itemName", "알 수 없는 상품");
@@ -72,7 +72,7 @@ public class ChatService {
             }
 
             // 마지막 메시지 조회
-            List<Message> messages = messageRepository.findByChatRoomId(room.getChatRoomId());
+            List<Message> messages = messageRepository.findByChatRoomId(String.valueOf(room.getChatRoomId()));
             if (!messages.isEmpty()) {
                 // 최신 메시지 찾기
                 Message lastMessage = messages.stream()

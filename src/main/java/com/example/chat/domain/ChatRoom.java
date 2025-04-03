@@ -18,7 +18,7 @@ public class ChatRoom {
     private Long id;
 
     @Column( nullable = false)
-    private Long chatRoomId;       // 채팅방 ID (상품 ID)
+    private String chatRoomId;       // 채팅방 ID (상품 ID)
     private String  senderId;         // 보낸 사람 ID
     private String  receiverId;       // 받는 사람 ID
 

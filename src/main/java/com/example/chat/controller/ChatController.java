@@ -28,10 +28,11 @@ public class ChatController {
         Item item = itemSelectOneUseCase.findById(itemId);
 
         // 상품 등록자의 userId를 receiverId로 설정
-        Long chatRoomId = itemId;
+        
         String receiverId = String.valueOf(item.getUserId());
         String senderId = memberDetails.getUsername(); // JWT 쿠키에서 가져온 로그인한 유저 ID
-
+        String chatRoomId = String.valueOf(itemId) + senderId;
+        
         model.addAttribute("chatRoomId", itemId);           // chatRoomId로 사용
         model.addAttribute("senderId", senderId);       // 현재 로그인한 유저
         model.addAttribute("receiverId", receiverId);   // 상품 등록자
@@ -41,7 +42,7 @@ public class ChatController {
 
     @GetMapping("/chatroom/{chatRoomId}")
     @ResponseBody
-    public List<Message> getMessages(@PathVariable Long chatRoomId) {
+    public List<Message> getMessages(@PathVariable String chatRoomId) {
         return chatService.getMessages(chatRoomId);
     }
 

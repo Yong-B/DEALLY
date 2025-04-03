@@ -1,6 +1,6 @@
     CREATE TABLE IF NOT EXISTS chat_room (
     id BIGSERIAL PRIMARY KEY,         -- 자동 증가하는 ID
-    chat_room_id BIGINT NOT NULL,     -- 채팅방 ID (상품 ID)
+    chat_room_id VARCHAR(255) NOT NULL,     -- 채팅방 ID (상품 ID)
     sender_id VARCHAR(255) NOT NULL,  -- 보낸 사람 ID
     receiver_id VARCHAR(255) NOT NULL, -- 받는 사람 ID
     created_at TIMESTAMP DEFAULT now()-- 채팅방 생성 시간

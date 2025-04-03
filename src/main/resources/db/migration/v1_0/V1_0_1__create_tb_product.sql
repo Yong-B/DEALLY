@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS item (
     item_name   VARCHAR(255) NOT NULL,
     price       NUMERIC(10, 2) NOT NULL,
     quantity    INT NOT NULL,
-    user_id     BIGINT NOT NULL-- 회원 ID (등록자 정보)
+    user_id     VARCHAR(255) NOT NULL-- 회원 ID (등록자 정보)
 );
 
 -- 테이블 코멘트
