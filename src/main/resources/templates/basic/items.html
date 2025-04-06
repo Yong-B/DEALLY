@@ -48,11 +48,12 @@
         }
 
         .product-card {
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            padding: 15px;
-            text-align: center;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .product-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
         }
 
         .product-card img {
@@ -82,6 +83,103 @@
             font-weight: bold;
             text-decoration: none;
         }
+        
+        .product-card img {
+             width: 100%;
+             height: 250px;
+             object-fit: cover;
+             border-radius: 10px;
+        }
+        
+        /* 로그인 모달 스타일 */
+        .login-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-modal-content {
+    position: relative;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 350px; /* 너비 증가 */
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    word-break: keep-all; /* 단어 단위로 줄바꿈 */
+    word-wrap: break-word; /* 긴 단어 줄바꿈 */
+}
+
+.login-modal-content h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.login-modal-content p {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.login-modal-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.login-modal-buttons button {
+    padding: 14px;
+    border-radius: 5px;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.login-modal-buttons .login-btn {
+    background-color: #ff8a3d;
+    color: white;
+    font-weight: bold;
+}
+
+.login-modal-buttons .login-btn:hover {
+    background-color: #ff702d;
+    transform: translateY(-2px);
+}
+
+.login-modal-buttons .register-btn {
+    background-color: #f1f1f1;
+    color: #333;
+}
+
+.login-modal-buttons .register-btn:hover {
+    background-color: #e1e1e1;
+    transform: translateY(-2px);
+}
+
+.login-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #aaa;
+    transition: color 0.2s;
+}
+
+.login-modal-close:hover {
+    color: #333;
+}
     </style>
 </head>
 <body>
@@ -95,66 +193,117 @@
         <button class="btn btn-primary" type="submit">검색</button>
     </form>
     <div class="nav-buttons">
-        <button class="btn btn-primary" onclick="location.href='/mypage'" th:onclick="|location.href='@{/mypage}'|">마이페이지</button>
-        <button class="btn btn-secondary" onclick="logout()">로그아웃</button>
+        <!-- 로그인 상태에 따라 다른 버튼 보여주기 -->
+        <button class="btn btn-secondary" id="chatButton" onclick="checkLoginBeforeAction('/basic/chatroom')">채팅내역</button>
+        <button class="btn btn-primary" id="myPageButton" onclick="checkLoginBeforeAction('/mypage')">마이페이지</button>
+
+        <!-- 로그인/로그아웃 버튼 - 자바스크립트로 text와 동작 변경 -->
+        <button class="btn btn-secondary" id="authButton">로그인</button>
     </div>
 </div>
 
 <div class="container">
-    <a class="add-product" href="addForm.html" th:href="@{/basic/items/add}">상품 등록</a>
+    <!-- 상품 등록 버튼 - 로그인 체크 추가 -->
+    <a class="add-product" href="javascript:void(0)" onclick="checkLoginBeforeAction('/basic/items/add')">상품 등록</a>
 
     <h2 th:if="${searchKeyword != null and searchKeyword != ''}" th:text="'\'' + ${searchKeyword} + '\' 검색 결과'" style="margin-bottom: 20px;"></h2>
 
     <div class="product-list" th:if="${items != null and items.totalElements > 0}">
         <div class="product-card" th:each="item : ${items.content}">
             <a class="product-link" th:href="@{/basic/items/{itemId}(itemId=${item.id})}">
+                <img th:src="${(item.imagesFiles != null and item.imagesFiles.size() > 0) 
+                            ? '/basic/items/images/' + item.imagesFiles[0].storeFileName 
+                            : '/images/default-thumbnail.jpg'}"
+                     alt="상품 이미지"
+                     class="product-image">
+
                 <div class="product-name" th:text="${item.itemName}">상품명</div>
-                <div class="product-price" th:text="|${item.price}원|">10000원</div>
+                <div class="product-price" th:text="|${#numbers.formatInteger(item.price, 0, 'COMMA')}원|">10000원</div>
             </a>
         </div>
     </div>
 
-    <!-- 검색 결과가 없을 때 메시지 표시 -->
     <div th:if="${noResultsMessage != null}" style="text-align: center; font-size: 18px; color: gray; margin-top: 20px;">
         <span th:text="${noResultsMessage}"></span>
     </div>
 </div>
-<script>
-    async function fetchWithAccessToken(url, options = {}) {
-        let accessToken = localStorage.getItem("accessToken");
-        
-        if (accessToken) {
-            if (!options.headers) {
-                options.headers = {};
-            }
-            options.headers["access"] = accessToken;
-        }
 
-        let response = await fetch(url, options);
-
-        if (response.status === 401) {
-            console.log("Access token expired. Trying to reissue...");
-            let reissueResponse = await fetch("/reissue", {
-                method: "POST",
-                credentials: "include"
+<!-- 로그인 모달 -->
+<div class="login-modal" id="loginModal">
+    <div class="login-modal-content">
+        <span class="login-modal-close" onclick="closeLoginModal()">&times;</span>
+        <h3>로그인이 필요합니다</h3>
+        <p>이 기능을 사용하려면 로그인이 필요합니다.</p>
+        <div class="login-modal-buttons">
+            <button class="login-btn" onclick="location.href='/login'">로그인</button>
+            <button class="register-btn" onclick="location.href='/member/add'">회원가입</button>
+        </div>
+    </div>
+</div>
+<script th:inline="javascript">
+    // 페이지 로드 시 로그인 상태 확인
+    document.addEventListener('DOMContentLoaded', function() {
+        checkLoginStatus();
+    });
+    
+    // 로그인 상태 확인 함수
+    async function checkLoginStatus() {
+        try {
+            const response = await fetch('/member/check-login', {
+                method: 'GET',
+                credentials: 'include'  // 쿠키 포함
             });
-
-            if (reissueResponse.ok) {
-                console.log("New access token issued. Retrying request...");
-                let newAccessToken = reissueResponse.headers.get("access");
-                
-                if (newAccessToken) {
-                    localStorage.setItem("accessToken", newAccessToken);
-                    options.headers["access"] = newAccessToken;
-                    response = await fetch(url, options);
-                }
+            
+            const authButton = document.getElementById('authButton');
+            
+            if (response.ok) {
+                // 로그인 상태
+                console.log("로그인 상태 확인: 로그인됨");
+                authButton.textContent = '로그아웃';
+                authButton.onclick = logout;
             } else {
-                console.log("Reissue failed. Redirecting to login...");
-                window.location.href = "/login";
+                // 비로그인 상태
+                console.log("로그인 상태 확인: 로그인되지 않음");
+                authButton.textContent = '로그인';
+                authButton.onclick = showLoginModal;
             }
+        } catch (error) {
+            console.error("로그인 상태 확인 중 에러:", error);
         }
-
-        return response;
+    }
+    
+    // 로그인 필요한 액션 전 체크
+    async function checkLoginBeforeAction(url) {
+        try {
+            const response = await fetch('/member/check-login', {
+                method: 'GET',
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                // 로그인 상태면 바로 이동
+                location.href = url;
+            } else {
+                // 비로그인 상태면 모달 표시
+                const modal = document.getElementById('loginModal');
+                modal.style.display = 'flex';
+            }
+        } catch (error) {
+            console.error("로그인 상태 확인 중 에러:", error);
+            const modal = document.getElementById('loginModal');
+            modal.style.display = 'flex';
+        }
+    }
+    
+    // 나머지 함수들은 그대로 유지
+    function showLoginModal() {
+        const modal = document.getElementById('loginModal');
+        modal.style.display = 'flex';
+    }
+    
+    function closeLoginModal() {
+        const modal = document.getElementById('loginModal');
+        modal.style.display = 'none';
     }
     
     async function logout() {
@@ -164,8 +313,7 @@
                 credentials: "include"
             });
             if (response.ok || response.status === 400) {
-                localStorage.removeItem("accessToken");
-                window.location.href = "/login";
+                window.location.reload();
             } else {
                 console.error("Logout failed");
             }
@@ -173,7 +321,13 @@
             console.error("Error during logout", error);
         }
     }
+    
+    window.onclick = function(event) {
+        const modal = document.getElementById('loginModal');
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
 </script>
-
 </body>
 </html>

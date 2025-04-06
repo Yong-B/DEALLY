@@ -2,14 +2,33 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <link th:href="@{/css/bootstrap.min.css}"
-          href="../css/bootstrap.min.css" rel="stylesheet">
+    <link th:href="@{/css/bootstrap.min.css}" href="../css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f7f7f7;
             margin: 0;
             padding: 0;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .navbar .logo a {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ff8a3d;
+            text-decoration: none;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
         }
 
         .container {
@@ -55,30 +74,30 @@
             margin: 30px 0;
         }
 
-        .btn {
+        .btn1 {
             font-size: 1.2rem;
             padding: 12px 20px;
             border-radius: 5px;
         }
 
-        .btn-primary {
+        .btn-3rd {
             background-color: #ff9f00;
             border-color: #ff9f00;
             color: #fff;
         }
 
-        .btn-primary:hover {
+        .btn-3rd:hover {
             background-color: #ff7a00;
             border-color: #ff7a00;
         }
 
-        .btn-secondary {
+        .btn-4rd {
             background-color: #f1f1f1;
             border-color: #ddd;
             color: #333;
         }
 
-        .btn-secondary:hover {
+        .btn-4rd:hover {
             background-color: #e1e1e1;
             border-color: #ccc;
         }
@@ -91,12 +110,204 @@
         .col {
             flex: 1;
         }
+        
+        /* 로그인 모달 스타일 */
+.login-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-modal-content {
+    position: relative;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 350px; /* 너비 증가 */
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    word-break: keep-all; /* 단어 단위로 줄바꿈 */
+    word-wrap: break-word; /* 긴 단어 줄바꿈 */
+}
+
+.login-modal-content h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.login-modal-content p {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.login-modal-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.login-modal-buttons button {
+    padding: 14px;
+    border-radius: 5px;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.login-modal-buttons .login-btn {
+    background-color: #ff8a3d;
+    color: white;
+    font-weight: bold;
+}
+
+.login-modal-buttons .login-btn:hover {
+    background-color: #ff702d;
+    transform: translateY(-2px);
+}
+
+.login-modal-buttons .register-btn {
+    background-color: #f1f1f1;
+    color: #333;
+}
+
+.login-modal-buttons .register-btn:hover {
+    background-color: #e1e1e1;
+    transform: translateY(-2px);
+}
+
+.login-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #aaa;
+    transition: color 0.2s;
+}
+
+.login-modal-close:hover {
+    color: #333;
+}
+        /* 로그인 모달 스타일 */
+        .login-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-modal-content {
+    position: relative;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 350px; /* 너비 증가 */
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    word-break: keep-all; /* 단어 단위로 줄바꿈 */
+    word-wrap: break-word; /* 긴 단어 줄바꿈 */
+}
+
+.login-modal-content h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.login-modal-content p {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.login-modal-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.login-modal-buttons button {
+    padding: 14px;
+    border-radius: 5px;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.login-modal-buttons .login-btn {
+    background-color: #ff8a3d;
+    color: white;
+    font-weight: bold;
+}
+
+.login-modal-buttons .login-btn:hover {
+    background-color: #ff702d;
+    transform: translateY(-2px);
+}
+
+.login-modal-buttons .register-btn {
+    background-color: #f1f1f1;
+    color: #333;
+}
+
+.login-modal-buttons .register-btn:hover {
+    background-color: #e1e1e1;
+    transform: translateY(-2px);
+}
+
+.login-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #aaa;
+    transition: color 0.2s;
+}
+
+.login-modal-close:hover {
+    color: #333;
+}
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="navbar">
+    <div class="logo">
+        <a th:href="@{/basic/items}">DEALLY</a>
+    </div>
+    <form class="search-box" th:action="@{/basic/items}" method="get">
+        <input type="text" id="searchInput" name="searchKeyword" placeholder="검색어를 입력하세요" th:value="${searchKeyword}">
+        <button class="btn btn-primary" type="submit">검색</button>
+    </form>
+    <div class="nav-buttons">
+        <button class="btn btn-primary" id="myPageButton" onclick="checkLoginBeforeAction('/mypage')">마이페이지</button>
+        <button class="btn btn-secondary" id="authButton">로그인</button>
+    </div>
+</div>
 
+<div class="container">
     <div class="page-header">
         <h2>상품 상세</h2>
     </div>
@@ -105,39 +316,142 @@
 
     <div class="mb-3">
         <label for="itemId">상품 ID</label>
-        <input type="text" id="itemId" name="itemId" class="form-control" th:value="${item.id}" readonly>
+        <input type="text" id="itemId" name="itemId" class="form-control" value="1" th:value="${item.id}" readonly>
     </div>
     <div class="mb-3">
         <label for="itemName">상품명</label>
-        <input type="text" id="itemName" name="itemName" class="form-control" th:value="${item.itemName}" readonly>
+        <input type="text" id="itemName" name="itemName" class="form-control" value="상품A" th:value="${item.itemName}" readonly>
     </div>
     <div class="mb-3">
         <label for="price">가격</label>
-        <input type="text" id="price" name="price" class="form-control" th:value="${item.price}" readonly>
+        <input type="text" id="price" name="price" class="form-control" value="10000" th:value="${#numbers.formatInteger(item.price, 0, 'COMMA')}" readonly>
     </div>
     <div class="mb-3">
         <label for="quantity">수량</label>
-        <input type="text" id="quantity" name="quantity" class="form-control" th:value="${item.quantity}" readonly>
+        <input type="text" id="quantity" name="quantity" class="form-control" value="10" th:value="${item.quantity}" readonly>
     </div>
 
     <hr>
 
     <div class="row">
         <div class="col">
-            <button class="w-100 btn btn-primary btn-lg"
-                    onclick="location.href='editForm.html'"
-                    th:onclick="|location.href='@{/basic/items/{itemId}/edit(itemId=${item.id})}'|"
+            <button class="w-100 btn1 btn-3rd btn-lg"
+                    onclick="checkLoginBeforeAction('/basic/items/' + document.getElementById('itemId').value + '/start-chat')"
                     type="button">채팅하기</button>
         </div>
         <div class="col">
-            <button class="w-100 btn btn-secondary btn-lg"
+            <button class="w-100 btn1 btn-4rd btn-lg"
                     onclick="location.href='items.html'"
                     th:onclick="|location.href='@{/basic/items}'|"
                     type="button">목록으로</button>
         </div>
     </div>
+</div>
 
-</div> <!-- /container -->
+<!-- 로그인 모달 -->
+<div class="login-modal" id="loginModal">
+    <div class="login-modal-content">
+        <span class="login-modal-close" onclick="closeLoginModal()">&times;</span>
+        <h3>로그인이 필요합니다</h3>
+        <p>이 기능을 사용하려면 로그인이 필요합니다.</p>
+        <div class="login-modal-buttons">
+            <button class="login-btn" onclick="location.href='/login'">로그인</button>
+            <button class="register-btn" onclick="location.href='/member/add'">회원가입</button>
+        </div>
+    </div>
+</div>
 
+<script>
+    // 페이지 로드 시 로그인 상태 확인
+    document.addEventListener('DOMContentLoaded', function() {
+        checkLoginStatus();
+    });
+    
+    // 로그인 상태 확인 함수
+    async function checkLoginStatus() {
+        try {
+            const response = await fetch('/member/check-login', {
+                method: 'GET',
+                credentials: 'include'
+            });
+            
+            const authButton = document.getElementById('authButton');
+            
+            if (response.ok) {
+                // 로그인 상태
+                console.log("로그인 상태 확인: 로그인됨");
+                authButton.textContent = '로그아웃';
+                authButton.onclick = logout;
+            } else {
+                // 비로그인 상태
+                console.log("로그인 상태 확인: 로그인되지 않음");
+                authButton.textContent = '로그인';
+                authButton.onclick = showLoginModal;
+            }
+        } catch (error) {
+            console.error("로그인 상태 확인 중 에러:", error);
+        }
+    }
+    
+    // 로그인 필요한 액션 전 체크
+    async function checkLoginBeforeAction(url) {
+        try {
+            const response = await fetch('/member/check-login', {
+                method: 'GET',
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                // 로그인 상태면 바로 이동
+                location.href = url;
+            } else {
+                // 비로그인 상태면 모달 표시
+                const modal = document.getElementById('loginModal');
+                modal.style.display = 'flex';
+            }
+        } catch (error) {
+            console.error("로그인 상태 확인 중 에러:", error);
+            const modal = document.getElementById('loginModal');
+            modal.style.display = 'flex';
+        }
+    }
+    
+    // 로그인 모달 표시
+    function showLoginModal() {
+        const modal = document.getElementById('loginModal');
+        modal.style.display = 'flex';
+    }
+    
+    // 로그인 모달 닫기
+    function closeLoginModal() {
+        const modal = document.getElementById('loginModal');
+        modal.style.display = 'none';
+    }
+    
+    // 로그아웃 기능
+    async function logout() {
+        try {
+            let response = await fetch("/logout", {
+                method: "POST",
+                credentials: "include"
+            });
+            if (response.ok || response.status === 400) {
+                window.location.href = "/login";
+            } else {
+                console.error("Logout failed");
+            }
+        } catch (error) {
+            console.error("Error during logout", error);
+        }
+    }
+    
+    // 모달 외부 클릭 시 닫기
+    window.onclick = function(event) {
+        const modal = document.getElementById('loginModal');
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+</script>
 </body>
 </html>

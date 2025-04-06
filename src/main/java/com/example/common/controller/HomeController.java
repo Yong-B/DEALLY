@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class HomeController {
     @GetMapping("/") // 루트 URL 요청 처리
     public String home() {
-        return "home"; // templates/home.html 반환
+        return "redirect:/basic/items";
     }
 }
