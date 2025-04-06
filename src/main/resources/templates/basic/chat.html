@@ -150,8 +150,7 @@
     const chatWindow = document.getElementById('chatWindow');
 
     const chatRoomId = [[${chatRoomId}]];
-    const senderId =  [[${senderId}]];
-    const receiverId =  [[${receiverId}]];
+    const senderId = [[${userId}]];
 
     // 뒤로 가기 함수
     function goBack() {
@@ -178,11 +177,8 @@
             })
             .catch(err => console.error('Failed to load messages:', err));
     }
-
-
-function connect() {
-    // WebSocket URL은 이미 올바르게 설정되어 있으므로 수정할 필요 없습니다
-    socket = new WebSocket(`ws://localhost:8080/ws/chat?chatRoomId=${chatRoomId}&senderId=${senderId}&receiverId=${receiverId}`);
+ function connect() {
+        socket = new WebSocket(`ws://localhost:8080/ws/chat?chatRoomId=${chatRoomId}&senderId=${senderId}`);
 
         socket.onopen = function() {
             console.log("✅ WebSocket 연결 완료");
@@ -211,7 +207,6 @@ function connect() {
                 messageType: "TALK",
                 chatRoomId: chatRoomId,
                 senderId: senderId,
-                receiverId: receiverId,
                 message: message
             };
 
