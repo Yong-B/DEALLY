@@ -36,30 +36,24 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         Map<String, String> params = getQueryParams(session);
+        String chatRoomId = params.get("chatRoomId");
+        String senderId = params.get("senderId");
 
-        String chatRoomId = String.valueOf(params.get("chatRoomId"));    // itemId
-        String senderId = String.valueOf(params.get("senderId"));        // 로그인 유저
-        String receiverId = String.valueOf(params.get("receiverId"));    // 상품 등록자
-        String chattingId = chatRoomId + senderId;
+        ChatRoom chatRoom = chatService.getChatRoom(chatRoomId);
 
-        log.info("✅ WebSocket 연결됨 - chatRoomId: {}, senderId: {}, receiverId: {}",
-                chatRoomId, senderId, receiverId);
+        String receiverId = chatRoom.getUser1().equals(senderId)
+                ? chatRoom.getUser2()
+                : chatRoom.getUser1();
 
-        // sender와 receiver가 같은 경우에는 새로운 채팅방을 만들지 않고 기존 채팅방만 조회
-        ChatRoom chatRoom;
-        if (senderId.equals(receiverId)) {
-            log.info("⚠️ sender와 receiver가 동일하여 기존 채팅방만 조회합니다.");
-            chatRoom = chatRoomRepository.findByChatRoomId(chatRoomId)
-                    .orElseThrow(() -> new RuntimeException("채팅방이 존재하지 않습니다."));
-        } else {
-            chatRoom = chatRoomRepository.findByChatRoomId(chatRoomId)
-                    .orElseGet(() -> createChatRoom(chatRoomId, senderId, receiverId));
-        }
-
-
-        // 채팅방 세션 관리
+        // 💡 sessionMap → chatRoomSessionMap 으로 수정
         chatRoomSessionMap.putIfAbsent(chatRoomId, new HashSet<>());
         chatRoomSessionMap.get(chatRoomId).add(session);
+
+        session.getAttributes().put("chatRoomId", chatRoomId);
+        session.getAttributes().put("senderId", senderId);
+        session.getAttributes().put("receiverId", receiverId);
+
+        log.info("💬 WebSocket 연결됨: {}, sender={}, receiver={}", chatRoomId, senderId, receiverId);
     }
 
     // 소켓 통신 시 메세지의 전송을 다루는 부분
@@ -68,24 +62,21 @@ public class WebSocketHandler extends TextWebSocketHandler {
         String payload = message.getPayload();
         log.info("💬 수신한 메시지: {}", payload);
 
-        // 페이로드 -> ChatMessageDto 변환
         ChatMessageDto chatMessageDto = mapper.readValue(payload, ChatMessageDto.class);
-        String chatRoomId = chatMessageDto.getChatRoomId();
+        String chatRoomId = chatMessageDto.getChatRoomId();  // = itemId
 
-        // 채팅방 세션 확인
         if (!chatRoomSessionMap.containsKey(chatRoomId)) {
             log.warn("⚠️ 채팅방 없음: {}", chatRoomId);
             return;
         }
 
         // 메시지 DB 저장
-        chatService.saveMessage(chatMessageDto); // 여기서 메시지를 저장하도록 함
+        chatService.saveMessage(chatMessageDto);
 
-        // 1:1 채팅에서 수신자만 메시지 수신
+        // 상대방에게 메시지 전송
         Set<WebSocketSession> chatRoomSession = chatRoomSessionMap.get(chatRoomId);
         sendMessageToReceiver(chatMessageDto, chatRoomSession);
     }
-
     // 소켓 연결 끊김 처리
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
@@ -118,7 +109,10 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     private void sendMessageToReceiver(ChatMessageDto chatMessageDto, Set<WebSocketSession> chatRoomSession) {
         chatRoomSession.parallelStream()
-                .filter(session -> !getQueryParams(session).get("senderId").equals(String.valueOf(chatMessageDto.getSenderId())))
+                .filter(session -> {
+                    String sessionUserId = getQueryParams(session).get("senderId");
+                    return !sessionUserId.equals(String.valueOf(chatMessageDto.getSenderId()));
+                })
                 .forEach(session -> sendMessage(session, chatMessageDto));
     }
     // 메시지 전송 메소드
@@ -130,16 +124,4 @@ public class WebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    private ChatRoom createChatRoom(String chatRoomId, String senderId, String receiverId) {
-        // 새로운 채팅방 생성
-        ChatRoom chatRoom = ChatRoom.builder()
-                .chatRoomId(chatRoomId)
-                .senderId(senderId.toString())
-                .receiverId(receiverId.toString())
-                .createdAt(LocalDateTime.now())  // 채팅방 생성 시간
-                .build();
-
-        // 채팅방 저장
-        return chatRoomRepository.save(chatRoom);
-    }
 }

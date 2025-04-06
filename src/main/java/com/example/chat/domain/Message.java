@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 public class Message {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,11 +20,15 @@ public class Message {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_id")
     @JsonIgnore
-    private ChatRoom chatRoom;   // 어떤 채팅방인지
+    private ChatRoom chatRoom; // 어떤 채팅방인지
 
-    private String senderId;      // 보낸 사람
-    private String message;       // 메시지 내용
-    private LocalDateTime timestamp;  // 보낸 시간
+    @Column(nullable = false)
+    private String senderId;   // 보낸 사람 ID
+
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String message;    // 메시지 내용
+
+    private LocalDateTime timestamp; // 보낸 시간
 
     @PrePersist
     public void setTimestamp() {

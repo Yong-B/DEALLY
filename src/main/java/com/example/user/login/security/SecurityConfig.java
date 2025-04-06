@@ -67,6 +67,8 @@ public class SecurityConfig {
                         .requestMatchers("/basic/items/add").hasRole("USER")
                         .requestMatchers("/basic/items/chat").hasRole("USER")
                         .requestMatchers("/basic/chatroom/**").hasRole("USER")
+                        .requestMatchers("/basic/chat/enter/**").hasRole("USER")
+                        .requestMatchers("/chat/enter/**").hasRole("USER")
                         .requestMatchers("/ws/chat").permitAll()
                         .requestMatchers("/chatroom/**").permitAll()
                         .requestMatchers("/member/check-login").permitAll()  // 추가

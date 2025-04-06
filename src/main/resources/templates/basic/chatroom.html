@@ -93,7 +93,8 @@
     <h2>채팅방 목록</h2>
     <ul class="chatroom-list" id="chatroomList">
         <li th:each="chatRoom : ${chatRooms}" class="chatroom-item"
-            th:onclick="|location.href='/basic/items/' + ${chatRoom.itemId} + '/chat'|">
+            th:attr="data-chatroom-id=${chatRoom.chatRoomId}"
+            onclick="goToChatRoom(this)">
             <div>
                 <div class="chatroom-title" th:text="${chatRoom.itemName}">상품 이름</div>
                 <div class="last-message" th:text="${chatRoom.lastMessage}">마지막 메시지</div>
@@ -106,6 +107,11 @@
         참여 중인 채팅방이 없습니다.
     </div>
 </div>
-
+<script>
+    function goToChatRoom(element) {
+        const chatRoomId = element.getAttribute("data-chatroom-id");
+        window.location.href = `/chat/enter/${chatRoomId}`;
+    }
+</script>
 </body>
 </html>

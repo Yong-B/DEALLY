@@ -1,4 +1,5 @@
 package com.example.chat.domain;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,20 +14,28 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "chat_room")
 public class ChatRoom {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column( nullable = false)
-    private String chatRoomId;       // 채팅방 ID (상품 ID)
-    private String  senderId;         // 보낸 사람 ID
-    private String  receiverId;       // 받는 사람 ID
+    @Column(nullable = false, unique = true)
+    private String chatRoomId; // 예: "1_a_b" (itemId_user1_user2)
 
-    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
+    @Column(nullable = false)
+    private Long itemId;
+
+    @Column(nullable = false)
+    private String user1; // 채팅 참여자 1 (ID 기준 정렬된 작은 값)
+
+    @Column(nullable = false)
+    private String user2; // 채팅 참여자 2
+
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Message> messages = new ArrayList<>();
 
-    private LocalDateTime createdAt;  // 메시지 보낸 시간
+    private LocalDateTime createdAt;
 
     @PrePersist
     public void setTimestamp() {
