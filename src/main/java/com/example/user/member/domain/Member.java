@@ -18,13 +18,13 @@ public class Member {
 
     @Column(name = "login_id")
     private String loginId;
-    
+
     private String password;
-    
+
     private String name;
-    
+
     private String email;
-    
+
     private String role;
 
     public Member encodePassword(PasswordEncoder passwordEncoder) {
@@ -39,5 +39,9 @@ public class Member {
         this.name = name;
         this.email = email;
         this.role = (role != null) ? role : "ROLE_USER";
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
     }
 }

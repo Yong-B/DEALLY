@@ -50,8 +50,8 @@ public class ItemController {
                 .price(dto.price())
                 .quantity(dto.quantity())
                 .userId(loginId)
-                .build(); 
-        
+                .build();
+
         itemSaveUseCase.save(item);
 
         try {
@@ -65,7 +65,7 @@ public class ItemController {
             redirectAttributes.addFlashAttribute("errorMessage", "파일 업로드 중 오류가 발생했습니다.");
             return "redirect:/basic/items/add";  // 파일 저장 실패 시 등록 폼으로 리다이렉트
         }
-       
+
         redirectAttributes.addAttribute("itemId", item.getId());
         redirectAttributes.addAttribute("status", true);
 
@@ -73,17 +73,17 @@ public class ItemController {
     }
 
     @GetMapping // 목록 조회
-    public String items(Model model, 
+    public String items(Model model,
                         @PageableDefault(page = 0, size = 10, sort = "id", direction = Direction.ASC)Pageable pageable,
                         String searchKeyword) {
         Page<Item> items = null;
-        
+
         if (searchKeyword == null) {
             items = itemSelectAllUseCase.findAll(pageable);
         } else {
             items = itemSelectAllUseCase.searchByItemName(searchKeyword, pageable);
-        } 
-        
+        }
+
         model.addAttribute("items", items);
         model.addAttribute("searchKeyword", searchKeyword);
 
@@ -108,7 +108,7 @@ public class ItemController {
         if (memberDetails == null) {
             return "purchase/item-purchase";
         }
-        
+
         String loginId = memberDetails.getUsername();
         String ownerId = String.valueOf(item.getUserId());
 
@@ -118,7 +118,7 @@ public class ItemController {
 
     @GetMapping("/add")
     public String addForm() {
-        
+
         return "basic/addForm";
     }
 

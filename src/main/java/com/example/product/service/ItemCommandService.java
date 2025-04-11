@@ -19,7 +19,7 @@ public class ItemCommandService implements ItemSaveUseCase, ItemSelectAllUseCase
     public Item save(Item item) {
         return itemRepository.save(item);
     }
-    
+
     @Override
     public Page<Item> findAll(Pageable pageable) {
         return itemRepository.findAll(pageable);
@@ -52,7 +52,7 @@ public class ItemCommandService implements ItemSaveUseCase, ItemSelectAllUseCase
                 updateParam.getPrice(),
                 updateParam.getQuantity()
         );
-        
+
         return itemRepository.save(findItem);
     }
 
@@ -60,7 +60,7 @@ public class ItemCommandService implements ItemSaveUseCase, ItemSelectAllUseCase
     public void delete(Long itemId) {
         Item findItem = findById(itemId);
         itemRepository.delete(findItem);
-        
+
     }
 
 }
