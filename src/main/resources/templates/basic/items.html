@@ -195,7 +195,7 @@
     <div class="nav-buttons">
         <!-- 로그인 상태에 따라 다른 버튼 보여주기 -->
         <button class="btn btn-secondary" id="chatButton" onclick="checkLoginBeforeAction('/basic/chatroom')">채팅내역</button>
-        <button class="btn btn-primary" id="myPageButton" onclick="checkLoginBeforeAction('/mypage')">마이페이지</button>
+        <button class="btn btn-primary" id="myPageButton" onclick="checkLoginBeforeAction('/basic/mypage')">마이페이지</button>
 
         <!-- 로그인/로그아웃 버튼 - 자바스크립트로 text와 동작 변경 -->
         <button class="btn btn-secondary" id="authButton">로그인</button>
@@ -212,8 +212,8 @@
         <div class="product-card" th:each="item : ${items.content}">
             <a class="product-link" th:href="@{/basic/items/{itemId}(itemId=${item.id})}">
                 <img th:src="${(item.imagesFiles != null and item.imagesFiles.size() > 0) 
-                            ? '/basic/items/images/' + item.imagesFiles[0].storeFileName 
-                            : '/images/default-thumbnail.jpg'}"
+                    ? '/basic/items/images/' + item.imagesFiles[0].storeFileName 
+                    : '/No image.png'}"
                      alt="상품 이미지"
                      class="product-image">
 
