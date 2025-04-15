@@ -1,5 +1,6 @@
 package com.example.product.domain;
 import com.example.product.file.domain.UploadFile;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,36 +23,52 @@ public class Item {
     
     private Float price;
     
-    private Integer quantity;
-
     @Column(name = "user_id", nullable = false)
     private String userId;
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<UploadFile> imagesFiles;
     
-    
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    private ItemStatus status = ItemStatus.AVAILABLE;
+
+    @Nullable
+    private String buyerId;
+
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+
     @Builder(
             builderClassName = "UpdateItemBuilder",
             builderMethodName = "prepareUpdate",
             buildMethodName = "update"
     )
-    public Item(String itemName, Float price, Integer quantity, String userId) {
+    public Item(String itemName, Float price,  String userId, String description) {
         
         this.itemName = itemName;
         this.price = price;
-        this.quantity = quantity;
         this.userId = userId;
+        this.description = description;
     }
 
-    public Item updateFields(String itemName, Float price, Integer quantity) {
+    public Item updateFields(String itemName, Float price,  String description) {
         this.itemName = itemName;
         this.price = price;
-        this.quantity = quantity;
+        this.description = description;
         return this;
     }
     
     public void addImages(List<UploadFile> images) {
         this.imagesFiles = images;
     }
+
+    public void setStatus(ItemStatus status) {
+        this.status = status;
+    }
+
+    public void addBuyer(String buyerId) {
+        this.buyerId = buyerId;
+    }
+    
 }

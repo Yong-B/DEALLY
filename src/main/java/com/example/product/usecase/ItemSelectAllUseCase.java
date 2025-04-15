@@ -10,4 +10,9 @@ public interface ItemSelectAllUseCase {
     Page<Item> findAll(Pageable pageable);
 
     Page<Item> searchByItemName(String searchKeyword, Pageable pageable);
+
+    Page<Item> findByUserIdItem(String userId, Pageable pageable);
+
+    Page<Item> findByBuyerIdItem(String buyerId, Pageable pageable);
+    
 }

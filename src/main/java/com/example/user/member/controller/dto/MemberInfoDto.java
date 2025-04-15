@@ -1,6 +1,5 @@
 package com.example.user.member.controller.dto;
 
-import com.example.user.member.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

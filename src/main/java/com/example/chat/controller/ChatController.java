@@ -31,11 +31,12 @@ public class ChatController {
                            Model model) {
 
         String currentUserId = memberDetails.getUsername();
-
+        Item item = itemSelectOneUseCase.findById(itemId);
         ChatRoom chatRoom = chatService.getChatRoom(chatRoomId); // 생성 X, 그냥 가져오기
 
         model.addAttribute("chatRoomId", chatRoom.getChatRoomId());
         model.addAttribute("userId", currentUserId);
+        model.addAttribute("item", item);
 
         return "basic/chat";
     }
@@ -61,7 +62,7 @@ public class ChatController {
     }
     
     /**
-     * 채팅방 내 메시지 조회 (AJAX 등)
+     * 채팅방 내 메시지 조회
      */
     @GetMapping("/chatroom/{chatRoomId}")
     @ResponseBody
@@ -98,5 +99,6 @@ public class ChatController {
 
         // 여기서 기존 chatRoomId를 넘긴다! (중요)
         return "redirect:/basic/items/" + itemId + "/chat?chatRoomId=" + chatRoomId;
-    }
+    } 
+    
 }

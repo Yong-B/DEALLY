@@ -138,7 +138,8 @@
         <button class="btn btn btn-primary" type="submit">검색</button>
     </form>
     <div class="nav-buttons">
-        <button class="btn btn btn-primary" onclick="location.href='/mypage'" th:onclick="|location.href='@{/mypage}'|">마이페이지</button>
+        <button class="btn btn-secondary" id="chatButton" onclick="checkLoginBeforeAction('/basic/chatroom')">채팅내역</button>
+        <button class="btn btn-primary" id="myPageButton" onclick="checkLoginBeforeAction('/basic/mypage')">마이페이지</button>
         <button class="btn btn-secondary" onclick="logout()">로그아웃</button>
     </div>
 </div>
@@ -168,13 +169,14 @@
         </div>
         <div class="mb-3">
             <label for="price">가격</label>
-            <input type="text" id="price" name="price" class="form-control" value="10000" th:value="${#numbers.formatInteger(item.price, 0, 'COMMA')}">
+            <input type="text" id="price" name="price" class="form-control" value="10000" th:value="${#numbers.formatInteger(item.price, 0)}">
         </div>
         <div class="mb-3">
-            <label for="quantity">수량</label>
-            <input type="text" id="quantity" name="quantity" class="form-control" value="10" th:value="${item.quantity}">
+            <label for="description">상품 상세 설명</label>
+            <textarea id="description" name="description" class="form-control"
+                      placeholder="상품에 대한 자세한 설명을 입력하세요" rows="5" required
+                      th:text="${item.description}"></textarea>
         </div>
-
         <div class="mb-3">
             <label for="imageFiles">새로운 이미지 업로드</label>
             <input type="file" id="imageFiles" name="imageFiles" class="form-control" multiple>
@@ -204,6 +206,70 @@
 
 </div>
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        checkLoginStatus();
+    });
+    
+    // 로그인 상태 확인 함수
+    async function checkLoginStatus() {
+        try {
+            const response = await fetch('/member/check-login', {
+                method: 'GET',
+                credentials: 'include'  // 쿠키 포함
+            });
+            
+            const authButton = document.getElementById('authButton');
+            
+            if (response.ok) {
+                // 로그인 상태
+                console.log("로그인 상태 확인: 로그인됨");
+                authButton.textContent = '로그아웃';
+                authButton.onclick = logout;
+            } else {
+                // 비로그인 상태
+                console.log("로그인 상태 확인: 로그인되지 않음");
+                authButton.textContent = '로그인';
+                authButton.onclick = showLoginModal;
+            }
+        } catch (error) {
+            console.error("로그인 상태 확인 중 에러:", error);
+        }
+    }
+    
+    // 로그인 필요한 액션 전 체크
+    async function checkLoginBeforeAction(url) {
+        try {
+            const response = await fetch('/member/check-login', {
+                method: 'GET',
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                // 로그인 상태면 바로 이동
+                location.href = url;
+            } else {
+                // 비로그인 상태면 모달 표시
+                const modal = document.getElementById('loginModal');
+                modal.style.display = 'flex';
+            }
+        } catch (error) {
+            console.error("로그인 상태 확인 중 에러:", error);
+            const modal = document.getElementById('loginModal');
+            modal.style.display = 'flex';
+        }
+    }
+    
+    // 나머지 함수들은 그대로 유지
+    function showLoginModal() {
+        const modal = document.getElementById('loginModal');
+        modal.style.display = 'flex';
+    }
+    
+    function closeLoginModal() {
+        const modal = document.getElementById('loginModal');
+        modal.style.display = 'none';
+    }
+    
     async function logout() {
         try {
             let response = await fetch("/logout", {
@@ -211,8 +277,7 @@
                 credentials: "include"
             });
             if (response.ok || response.status === 400) {
-                localStorage.removeItem("accessToken");
-                window.location.href = "/login";
+                window.location.reload();
             } else {
                 console.error("Logout failed");
             }
@@ -220,6 +285,13 @@
             console.error("Error during logout", error);
         }
     }
-</script>>
+    
+    window.onclick = function(event) {
+        const modal = document.getElementById('loginModal');
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+</script>
 </body>
 </html>

@@ -2,6 +2,7 @@ package com.example.product.controller;
 
 import com.example.product.controller.dto.ItemCommandDto.ItemSaveRequest;
 import com.example.product.domain.Item;
+import com.example.product.domain.ItemStatus;
 import com.example.product.file.FileStore;
 import com.example.product.file.domain.UploadFile;
 import com.example.product.usecase.ItemSaveUseCase;
@@ -48,7 +49,7 @@ public class ItemController {
         Item item = Item.builder()
                 .itemName(dto.itemName())
                 .price(dto.price())
-                .quantity(dto.quantity())
+                .description(dto.description())
                 .userId(loginId)
                 .build();
 
@@ -76,7 +77,7 @@ public class ItemController {
     public String items(Model model,
                         @PageableDefault(page = 0, size = 10, sort = "id", direction = Direction.ASC)Pageable pageable,
                         String searchKeyword) {
-        Page<Item> items = null;
+        Page<Item> items;
 
         if (searchKeyword == null) {
             items = itemSelectAllUseCase.findAll(pageable);
@@ -132,6 +133,20 @@ public class ItemController {
     @PostMapping("/{itemId}/edit") // 수정
     public String edit(@PathVariable Long itemId, @ModelAttribute Item item) {
         itemUpdateUseCase.update(itemId, item);
+        return "redirect:/basic/items/{itemId}";
+    }
+
+    @PostMapping("/{itemId}/changeStatus")
+    public String changeStatus(@PathVariable Long itemId, @RequestParam("status") ItemStatus status,
+                               RedirectAttributes redirectAttributes) {
+        itemUpdateUseCase.updateStatus(itemId, status);
+
+        // 상태가 COMPLETED일 경우 /basic/chatroom으로 리다이렉트
+        if (status == ItemStatus.COMPLETED) {
+            return "redirect:/basic/{itemId}/chatroom-selection";
+        }
+
+        // 상태가 COMPLETED가 아니라면 해당 아이템의 상세 페이지로 리다이렉트
         return "redirect:/basic/items/{itemId}";
     }
 
