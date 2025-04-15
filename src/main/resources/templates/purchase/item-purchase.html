@@ -57,24 +57,26 @@
         }
         
         .product-detail {
-            display: flex;
-            gap: 20px;
+           display: flex;
+            gap: 50px;
+            width: 900px;
+            margin: 0 auto; /
         }
 
         .product-detail .image-container {
             flex: 1;
-            max-width: 400px;
+            max-width: 500px;
         }
-
+        
+        .product-detail img {
+             width: 100%;
+             border-radius: 10px;
+             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
         .product-detail .info-container {
             flex: 2;
             max-width: 500px;
-        }
-
-        .product-detail img {
-            width: 100%;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         .info-container h2 {
