@@ -36,4 +36,5 @@ public class MemberDto {
                 .role("ROLE_USER")
                 .build();
     }
+    
 }

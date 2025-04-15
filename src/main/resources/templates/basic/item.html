@@ -55,6 +55,46 @@
             font-size: 1rem;
             color: #555;
         }
+        
+        .product-detail {
+           display: flex;
+            gap: 50px;
+            width: 900px;
+            margin: 0 auto; /
+        }
+
+        .product-detail .image-container {
+            flex: 1;
+            max-width: 500px;
+        }
+        
+        .product-detail img {
+             width: 100%;
+             border-radius: 10px;
+             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .product-detail .info-container {
+            flex: 2;
+            max-width: 500px;
+        }
+
+        .info-container h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .info-container .price {
+            font-size: 1.5rem;
+            color: #ff8a3d;
+            margin: 10px 0;
+        }
+
+        .info-container .quantity {
+            font-size: 1.2rem;
+            color: #555;
+            margin: 10px 0;
+        }
 
         .form-control {
             font-size: 1rem;
@@ -212,7 +252,8 @@
         <button class="btn btn btn-primary" type="submit">검색</button>
     </form>
     <div class="nav-buttons">
-        <button class="btn btn btn-primary" onclick="checkLoginBeforeAction('/mypage')">마이페이지</button>
+        <button class="btn btn-secondary" id="chatButton" onclick="checkLoginBeforeAction('/basic/chatroom')">채팅내역</button>
+        <button class="btn btn-primary" id="myPageButton" onclick="checkLoginBeforeAction('/basic/mypage')">마이페이지</button>
         <button class="btn btn-secondary" id="authButton">로그인</button>
     </div>
 </div>
@@ -231,47 +272,46 @@
 </div>
 
 <div class="container">
-
-    <div class="page-header">
-        <h2>상품 상세</h2>
-    </div>
-
-    <h2 th:if="${param.status}" th:text="'저장 완료'"></h2>
-
-    <div class="mb-3">
-        <label for="itemId">상품 ID</label>
-        <input type="text" id="itemId" name="itemId" class="form-control" value="1" th:value="${item.id}" readonly>
-    </div>
-    <div class="mb-3">
-        <label for="itemName">상품명</label>
-        <input type="text" id="itemName" name="itemName" class="form-control" value="상품A" th:value="${item.itemName}" readonly>
-    </div>
-    <div class="mb-3">
-        <label for="price">가격</label>
-        <input type="text" id="price" name="price" class="form-control" value="10000" th:value="${#numbers.formatInteger(item.price, 0, 'COMMA')}"  readonly>
-    </div>
-    <div class="mb-3">
-        <label for="quantity">수량</label>
-        <input type="text" id="quantity" name="quantity" class="form-control" value="10" th:value="${item.quantity}" readonly>
-    </div>
-
-    <hr>
-
-    <div class="row">
-        <div class="col">
-            <button class="w-100 btn1 btn-3rd btn-lg"
-                    onclick="location.href='editForm.html'"
-                    th:onclick="|location.href='@{/basic/items/{itemId}/edit(itemId=${item.id})}'|"
-                    type="button">상품 수정</button>
+    <div class="product-detail">
+        <div class="image-container">
+            <img th:src="${(item.imagesFiles != null and item.imagesFiles.size() > 0) 
+                    ? '/basic/items/images/' + item.imagesFiles[0].storeFileName 
+                    : '/No image.png'}"
+                 alt="상품 이미지"
+                 class="product-image">
         </div>
-        <div class="col">
-            <button class="w-100 btn1 btn-4rd btn-lg"
-                    onclick="location.href='items.html'"
-                    th:onclick="|location.href='@{/basic/items}'|"
-                    type="button">목록으로</button>
+        <div class="info-container">
+            <form th:action="@{/basic/items/{itemId}/changeStatus(itemId=${item.id})}" method="post">
+            <label for="statusSelect">상태 변경</label>
+            <select id="statusSelect" name="status" class="form-control" onchange="this.form.submit()">
+                <option value="AVAILABLE" th:selected="${item.status.name() == 'AVAILABLE'}">판매중</option>
+                <option value="COMPLETED" th:selected="${item.status.name() == 'COMPLETED'}">거래완료</option>
+            </select>
+        </form>
+            <h2 th:text="${item.itemName}">상품명</h2>
+            <div class="price">
+                <span th:text="${#numbers.formatInteger(item.price, 0, 'COMMA')}">가격</span> 원
+            </div>
+            <div class="mb-3">
+                <label for="description">상품 상세 설명</label>
+                <textarea id="description" name="description" class="form-control"
+                          placeholder="상품에 대한 자세한 설명을 입력하세요" rows="5" required
+                          th:text="${item.description}" readonly></textarea>
+            </div>
+            <div class="row mt-3">
+                <div class="col">
+                    <button class="w-100 btn1 btn-3rd btn-lg"
+                            th:onclick="|location.href='@{/basic/items/{itemId}/edit(itemId=${item.id})}'|"
+                            type="button">상품 수정</button>
+                </div>
+                <div class="col">
+                    <button class="w-100 btn1 btn-4rd btn-lg"
+                            th:onclick="|location.href='@{/basic/items}'|"
+                            type="button">목록으로</button>
+                </div>
+            </div>
         </div>
     </div>
-
 </div>
 <script>
     // 페이지 로드 시 로그인 상태 확인

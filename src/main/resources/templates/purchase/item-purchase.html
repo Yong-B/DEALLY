@@ -2,7 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <link th:href="@{/css/bootstrap.min.css}" href="../css/bootstrap.min.css" rel="stylesheet">
+    <link th:href="@{/css/bootstrap.min.css}"
+          href="../css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -53,6 +54,47 @@
         label {
             font-size: 1rem;
             color: #555;
+        }
+        
+        .product-detail {
+           display: flex;
+            gap: 50px;
+            width: 900px;
+            margin: 0 auto; /
+        }
+
+        .product-detail .image-container {
+            flex: 1;
+            max-width: 500px;
+        }
+        
+        .product-detail img {
+             width: 100%;
+             border-radius: 10px;
+             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .product-detail .info-container {
+            flex: 2;
+            max-width: 500px;
+        }
+
+        .info-container h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .info-container .price {
+            font-size: 1.5rem;
+            color: #ff8a3d;
+            margin: 10px 0;
+        }
+
+        .info-container .quantity {
+            font-size: 1.2rem;
+            color: #555;
+            margin: 10px 0;
         }
 
         .form-control {
@@ -110,245 +152,114 @@
         .col {
             flex: 1;
         }
-        
-        /* 로그인 모달 스타일 */
-.login-modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-}
-
-.login-modal-content {
-    position: relative;
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    width: 350px; /* 너비 증가 */
-    text-align: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    word-break: keep-all; /* 단어 단위로 줄바꿈 */
-    word-wrap: break-word; /* 긴 단어 줄바꿈 */
-}
-
-.login-modal-content h3 {
-    font-size: 20px;
-    margin-bottom: 15px;
-    color: #333;
-}
-
-.login-modal-content p {
-    font-size: 16px;
-    line-height: 1.5;
-    color: #666;
-    margin-bottom: 20px;
-}
-
-.login-modal-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 25px;
-}
-
-.login-modal-buttons button {
-    padding: 14px;
-    border-radius: 5px;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.login-modal-buttons .login-btn {
-    background-color: #ff8a3d;
-    color: white;
-    font-weight: bold;
-}
-
-.login-modal-buttons .login-btn:hover {
-    background-color: #ff702d;
-    transform: translateY(-2px);
-}
-
-.login-modal-buttons .register-btn {
-    background-color: #f1f1f1;
-    color: #333;
-}
-
-.login-modal-buttons .register-btn:hover {
-    background-color: #e1e1e1;
-    transform: translateY(-2px);
-}
-
-.login-modal-close {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 24px;
-    cursor: pointer;
-    color: #aaa;
-    transition: color 0.2s;
-}
-
-.login-modal-close:hover {
-    color: #333;
-}
         /* 로그인 모달 스타일 */
         .login-modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-}
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
 
-.login-modal-content {
-    position: relative;
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    width: 350px; /* 너비 증가 */
-    text-align: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    word-break: keep-all; /* 단어 단위로 줄바꿈 */
-    word-wrap: break-word; /* 긴 단어 줄바꿈 */
-}
+        .login-modal-content {
+            position: relative;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 350px; /* 너비 증가 */
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            word-break: keep-all; /* 단어 단위로 줄바꿈 */
+            word-wrap: break-word; /* 긴 단어 줄바꿈 */
+        }
 
-.login-modal-content h3 {
-    font-size: 20px;
-    margin-bottom: 15px;
-    color: #333;
-}
+        .login-modal-content h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #333;
+        }
 
-.login-modal-content p {
-    font-size: 16px;
-    line-height: 1.5;
-    color: #666;
-    margin-bottom: 20px;
-}
+        .login-modal-content p {
+            font-size: 16px;
+            line-height: 1.5;
+            color: #666;
+            margin-bottom: 20px;
+        }
 
-.login-modal-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 25px;
-}
-
-.login-modal-buttons button {
-    padding: 14px;
-    border-radius: 5px;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.login-modal-buttons .login-btn {
-    background-color: #ff8a3d;
-    color: white;
-    font-weight: bold;
-}
-
-.login-modal-buttons .login-btn:hover {
-    background-color: #ff702d;
-    transform: translateY(-2px);
-}
-
-.login-modal-buttons .register-btn {
-    background-color: #f1f1f1;
-    color: #333;
-}
-
-.login-modal-buttons .register-btn:hover {
-    background-color: #e1e1e1;
-    transform: translateY(-2px);
-}
-
-.login-modal-close {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 24px;
-    cursor: pointer;
-    color: #aaa;
-    transition: color 0.2s;
-}
-
-.login-modal-close:hover {
-    color: #333;
-}
+        .login-modal-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 25px;
+        }
+        
+        .login-modal-buttons button {
+            padding: 14px;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .login-modal-buttons .login-btn {
+            background-color: #ff8a3d;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .login-modal-buttons .login-btn:hover {
+            background-color: #ff702d;
+            transform: translateY(-2px);
+        }
+        
+        .login-modal-buttons .register-btn {
+            background-color: #f1f1f1;
+            color: #333;
+        }
+        
+        .login-modal-buttons .register-btn:hover {
+            background-color: #e1e1e1;
+            transform: translateY(-2px);
+        }
+        
+        .login-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #aaa;
+            transition: color 0.2s;
+        }
+        
+        .login-modal-close:hover {
+            color: #333;
+        }
     </style>
 </head>
 <body>
-
 <div class="navbar">
     <div class="logo">
         <a th:href="@{/basic/items}">DEALLY</a>
     </div>
     <form class="search-box" th:action="@{/basic/items}" method="get">
         <input type="text" id="searchInput" name="searchKeyword" placeholder="검색어를 입력하세요" th:value="${searchKeyword}">
-        <button class="btn btn-primary" type="submit">검색</button>
+        <button class="btn btn btn-primary" type="submit">검색</button>
     </form>
     <div class="nav-buttons">
-        <button class="btn btn-primary" id="myPageButton" onclick="checkLoginBeforeAction('/mypage')">마이페이지</button>
+        <button class="btn btn-secondary" id="chatButton" onclick="checkLoginBeforeAction('/basic/chatroom')">채팅내역</button>
+        <button class="btn btn-primary" id="myPageButton" onclick="checkLoginBeforeAction('/basic/mypage')">마이페이지</button>
         <button class="btn btn-secondary" id="authButton">로그인</button>
     </div>
 </div>
 
-<div class="container">
-    <div class="page-header">
-        <h2>상품 상세</h2>
-    </div>
-
-    <h2 th:if="${param.status}" th:text="'저장 완료'"></h2>
-
-    <div class="mb-3">
-        <label for="itemId">상품 ID</label>
-        <input type="text" id="itemId" name="itemId" class="form-control" value="1" th:value="${item.id}" readonly>
-    </div>
-    <div class="mb-3">
-        <label for="itemName">상품명</label>
-        <input type="text" id="itemName" name="itemName" class="form-control" value="상품A" th:value="${item.itemName}" readonly>
-    </div>
-    <div class="mb-3">
-        <label for="price">가격</label>
-        <input type="text" id="price" name="price" class="form-control" value="10000" th:value="${#numbers.formatInteger(item.price, 0, 'COMMA')}" readonly>
-    </div>
-    <div class="mb-3">
-        <label for="quantity">수량</label>
-        <input type="text" id="quantity" name="quantity" class="form-control" value="10" th:value="${item.quantity}" readonly>
-    </div>
-
-    <hr>
-
-    <div class="row">
-        <div class="col">
-            <button class="w-100 btn1 btn-3rd btn-lg"
-                    onclick="checkLoginBeforeAction('/basic/items/' + document.getElementById('itemId').value + '/start-chat')"
-                    type="button">채팅하기</button>
-        </div>
-        <div class="col">
-            <button class="w-100 btn1 btn-4rd btn-lg"
-                    onclick="location.href='items.html'"
-                    th:onclick="|location.href='@{/basic/items}'|"
-                    type="button">목록으로</button>
-        </div>
-    </div>
-</div>
-
-<!-- 로그인 모달 -->
+<!-- 로그인 모달 추가 -->
 <div class="login-modal" id="loginModal">
     <div class="login-modal-content">
         <span class="login-modal-close" onclick="closeLoginModal()">&times;</span>
@@ -361,6 +272,42 @@
     </div>
 </div>
 
+<div class="container">
+    <div class="product-detail">
+        <div class="image-container">
+            <img th:src="${(item.imagesFiles != null and item.imagesFiles.size() > 0) 
+                    ? '/basic/items/images/' + item.imagesFiles[0].storeFileName 
+                    : '/No image.png'}"
+                 alt="상품 이미지"
+                 class="product-image">
+        </div>
+        <div class="info-container">
+            <h2 th:text="${item.itemName}">상품명</h2>
+            <div class="price">
+                <span th:text="${#numbers.formatInteger(item.price, 0, 'COMMA')}">가격</span> 원
+            </div>
+            <div class="mb-3">
+                <label for="description">상품 상세 설명</label>
+                <textarea id="description" name="description" class="form-control"
+                          placeholder="상품에 대한 자세한 설명을 입력하세요" rows="5" required
+                          th:text="${item.description}" readonly></textarea>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <button class="w-100 btn1 btn-3rd btn-lg"
+                            th:onclick="|checkLoginBeforeAction('/basic/items/' + ${item.id} + '/start-chat')|"
+                            type="button">채팅하기</button>
+                </div>
+                <div class="col">
+                    <button class="w-100 btn1 btn-4rd btn-lg"
+                            onclick="location.href='items.html'"
+                            th:onclick="|location.href='@{/basic/items}'|"
+                            type="button">목록으로</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     // 페이지 로드 시 로그인 상태 확인
     document.addEventListener('DOMContentLoaded', function() {

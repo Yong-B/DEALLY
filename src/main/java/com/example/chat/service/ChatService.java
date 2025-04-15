@@ -119,7 +119,6 @@ public class ChatService {
 
         return result;
     }
-
     /**
      * 시간 포맷 변환기
      */

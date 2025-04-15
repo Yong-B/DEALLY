@@ -1,6 +1,7 @@
 package com.example.product.service;
 
 import com.example.product.domain.Item;
+import com.example.product.domain.ItemStatus;
 import com.example.product.repository.ItemRepository;
 import com.example.product.usecase.*;
 import jakarta.transaction.Transactional;
@@ -19,7 +20,7 @@ public class ItemCommandService implements ItemSaveUseCase, ItemSelectAllUseCase
     public Item save(Item item) {
         return itemRepository.save(item);
     }
-    
+
     @Override
     public Page<Item> findAll(Pageable pageable) {
         return itemRepository.findAll(pageable);
@@ -30,6 +31,16 @@ public class ItemCommandService implements ItemSaveUseCase, ItemSelectAllUseCase
         return itemRepository.findByItemNameContaining(searchKeyword, pageable);
     }
 
+    @Override
+    public Page<Item> findByUserIdItem(String userId, Pageable pageable) {
+        return itemRepository.findByUserId(userId, pageable);
+    }
+
+    @Override
+    public Page<Item> findByBuyerIdItem(String buyerId, Pageable pageable) {
+        return itemRepository.findByBuyerId(buyerId, pageable);
+    }
+    
 
     @Override
     public Item findById(Long id) {
@@ -50,17 +61,26 @@ public class ItemCommandService implements ItemSaveUseCase, ItemSelectAllUseCase
         findItem.updateFields(
                 updateParam.getItemName(),
                 updateParam.getPrice(),
-                updateParam.getQuantity()
+                updateParam.getDescription()
         );
-        
+
         return itemRepository.save(findItem);
+    }
+
+    @Override
+    public void updateStatus(Long itemId, ItemStatus status) {
+
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new IllegalArgumentException("아이템을 찾을 수 없습니다."));
+        item.setStatus(status);
+        itemRepository.save(item);
     }
 
     @Override
     public void delete(Long itemId) {
         Item findItem = findById(itemId);
         itemRepository.delete(findItem);
-        
+
     }
 
 }

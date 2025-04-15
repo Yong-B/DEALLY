@@ -2,13 +2,13 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>마이페이지</title>
     <link th:href="@{/css/bootstrap.min.css}" href="../css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             background: #f8f9fa;
-            margin: 0;
             font-family: Arial, sans-serif;
+            margin: 0;
         }
 
         .navbar {
@@ -19,6 +19,7 @@
             background-color: white;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
+
         .navbar .logo a {
             font-size: 28px;
             font-weight: bold;
@@ -26,20 +27,89 @@
             text-decoration: none;
         }
 
-        .search-box {
-            display: flex;
-            gap: 10px;
-        }
-
         .container {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 40px auto;
-            padding: 20px;
-            background: white;
+            padding: 30px;
+            background-color: white;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            gap: 30px;
         }
 
+        .sidebar {
+            width: 220px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar li {
+            padding: 14px 20px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background-color: #f1f1f1;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .sidebar li:hover, .sidebar li.active {
+            background-color: #ff8a3d;
+            color: white;
+            font-weight: bold;
+        }
+
+        .content {
+            flex: 1;
+        }
+
+        .content h3 {
+            margin-bottom: 20px;
+            font-size: 22px;
+            color: #333;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .info-field {
+            margin-bottom: 15px;
+        }
+
+        .info-field label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .info-field input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .btn-orange {
+            background-color: #ff8a3d;
+            color: white;
+            font-weight: bold;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+        }
+
+        .btn-orange:hover {
+            background-color: #ff702d;
+        }
+        
         .product-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -183,54 +253,22 @@
     </style>
 </head>
 <body>
-
 <div class="navbar">
     <div class="logo">
         <a th:href="@{/basic/items}">DEALLY</a>
     </div>
     <form class="search-box" th:action="@{/basic/items}" method="get">
         <input type="text" id="searchInput" name="searchKeyword" placeholder="검색어를 입력하세요" th:value="${searchKeyword}">
-        <button class="btn btn-primary" type="submit">검색</button>
-        
+        <button class="btn btn btn-primary" type="submit">검색</button>
     </form>
     <div class="nav-buttons">
-        <!-- 로그인 상태에 따라 다른 버튼 보여주기 -->
         <button class="btn btn-secondary" id="chatButton" onclick="checkLoginBeforeAction('/basic/chatroom')">채팅내역</button>
-        <button class="btn btn-primary" id="myPageButton" onclick="checkLoginBeforeAction('/basic/mypage')">마이페이지</button>
-
-        <!-- 로그인/로그아웃 버튼 - 자바스크립트로 text와 동작 변경 -->
+        <button class="btn btn btn-primary" onclick="checkLoginBeforeAction('/basic/mypage')">마이페이지</button>
         <button class="btn btn-secondary" id="authButton">로그인</button>
     </div>
 </div>
 
-<div class="container">
-    
-    <!-- 상품 등록 버튼 - 로그인 체크 추가 -->
-    <a class="add-product" href="javascript:void(0)" onclick="checkLoginBeforeAction('/basic/items/add')">상품 등록</a>
-
-    <h2 th:if="${searchKeyword != null and searchKeyword != ''}" th:text="'\'' + ${searchKeyword} + '\' 검색 결과'" style="margin-bottom: 20px;"></h2>
-
-    <div class="product-list" th:if="${items != null and items.totalElements > 0}">
-        <div class="product-card" th:each="item : ${items.content}">
-            <a class="product-link" th:href="@{/basic/items/{itemId}(itemId=${item.id})}">
-                <img th:src="${(item.imagesFiles != null and item.imagesFiles.size() > 0) 
-                    ? '/basic/items/images/' + item.imagesFiles[0].storeFileName 
-                    : '/No image.png'}"
-                     alt="상품 이미지"
-                     class="product-image">
-
-                <div class="product-name" th:text="${item.itemName}">상품명</div>
-                <div class="product-price" th:text="|${#numbers.formatInteger(item.price, 0, 'COMMA')}원|">10000원</div>
-            </a>
-        </div>
-    </div>
-
-    <div th:if="${noResultsMessage != null}" style="text-align: center; font-size: 18px; color: gray; margin-top: 20px;">
-        <span th:text="${noResultsMessage}"></span>
-    </div>
-</div>
-
-<!-- 로그인 모달 -->
+<!-- 로그인 모달 추가 -->
 <div class="login-modal" id="loginModal">
     <div class="login-modal-content">
         <span class="login-modal-close" onclick="closeLoginModal()">&times;</span>
@@ -242,8 +280,87 @@
         </div>
     </div>
 </div>
+<div class="container">
+    <div class="sidebar">
+        <ul>
+            <li class="active" onclick="showSection('info')">정보 수정</li>
+            <li onclick="showSection('purchases')">구매 내역</li>
+            <li onclick="showSection('sales')">판매 내역</li>
+        </ul>
+    </div>
+    <div class="content">
+        <div id="info" class="section active">
+            <h3>정보 수정</h3>
+            <!-- 성공 메시지 출력 -->
+            <div th:if="${message}" class="alert alert-success" role="alert" style="margin-bottom: 20px;">
+                <span th:text="${message}"></span>
+            </div>
+            <form th:action="@{/basic/mypage/update}" method="post">
+                <div class="info-field">
+                    <label for="name">이름</label>
+                    <input type="text" id="name" name="name" th:value="${memberInfo.name}" disabled>
+                </div>
+                <div class="info-field">
+                    <label for="loginId">아이디</label>
+                    <input type="text" id="loginId" name="loginId" th:value="${memberInfo.loginId}" disabled>
+                </div>
+                <div class="info-field">
+                    <label for="email">이메일</label>
+                    <input type="email" id="email" name="email" th:value="${memberInfo.email}" disabled>
+                </div>
+                <div class="info-field">
+                    <label for="password">비밀번호 변경</label>
+                    <input type="password" id="password" name="password" placeholder="변경할 비밀번호 입력">
+                </div>
+                <button class="btn-orange" type="submit">저장하기</button>
+            </form>
+        </div>
+        
+        <div id="purchases" class="section">
+            <h3>구매 내역</h3>
+            <div class="product-list" th:if="${buyingItems != null and buyingItems.totalElements > 0}">
+                <div class="product-card" th:each="item : ${buyingItems.content}">
+                    <a class="product-link" th:href="@{/basic/items/{itemId}(itemId=${item.id})}">
+                        <img th:src="${(item.imagesFiles != null and item.imagesFiles.size() > 0) 
+                    ? '/basic/items/images/' + item.imagesFiles[0].storeFileName 
+                    : '/No image.png'}"
+                             alt="상품 이미지"
+                             class="product-image">
+
+                        <div class="product-name" th:text="${item.itemName}">상품명</div>
+                        <div class="product-price" th:text="|${#numbers.formatInteger(item.price, 0, 'COMMA')}원|">10000원</div>
+                    </a>
+                </div>
+            </div>
+            <div th:if="${buyingItems.totalElements == 0}">
+                <p>구매하신 상품이 없습니다.</p>
+            </div>
+        </div>
+        <div id="sales" class="section">
+            <h3>판매 내역</h3>
+
+            <div class="product-list" th:if="${sellingItems != null and sellingItems.totalElements > 0}">
+                <div class="product-card" th:each="item : ${sellingItems.content}">
+                    <a class="product-link" th:href="@{/basic/items/{itemId}(itemId=${item.id})}">
+                        <img th:src="${(item.imagesFiles != null and item.imagesFiles.size() > 0) 
+                    ? '/basic/items/images/' + item.imagesFiles[0].storeFileName 
+                    : '/No image.png'}"
+                             alt="상품 이미지"
+                             class="product-image">
+
+                        <div class="product-name" th:text="${item.itemName}">상품명</div>
+                        <div class="product-price" th:text="|${#numbers.formatInteger(item.price, 0, 'COMMA')}원|">10000원</div>
+                        <div class="product-status" th:text="${item.status.displayName}">판매중</div>
+                    </a>
+                </div>
+            </div>
+            <div th:if="${sellingItems.totalElements == 0}">
+                <p>등록한 판매 상품이 없습니다.</p>
+            </div>
+        </div>
+    </div>
+</div>
 <script th:inline="javascript">
-    // 페이지 로드 시 로그인 상태 확인
     document.addEventListener('DOMContentLoaded', function() {
         checkLoginStatus();
     });
@@ -307,7 +424,12 @@
         const modal = document.getElementById('loginModal');
         modal.style.display = 'none';
     }
-    
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+        document.querySelectorAll('.sidebar li').forEach(tab => tab.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        event.target.classList.add('active');
+    }
     async function logout() {
         try {
             let response = await fetch("/logout", {
@@ -315,19 +437,13 @@
                 credentials: "include"
             });
             if (response.ok || response.status === 400) {
-                window.location.reload();
+                localStorage.removeItem("accessToken");
+                window.location.href = "/login";
             } else {
                 console.error("Logout failed");
             }
         } catch (error) {
             console.error("Error during logout", error);
-        }
-    }
-    
-    window.onclick = function(event) {
-        const modal = document.getElementById('loginModal');
-        if (event.target == modal) {
-            modal.style.display = 'none';
         }
     }
 </script>
