@@ -27,6 +27,9 @@ DEALLY는 이용자 간의 상품 등록, 조회, 구매 및 1:1 채팅을 통�
 
 ---
 
+## 🧩 ERD
+![DEALLY ERD](https://github.com/user-attachments/assets/02ce27bc-b750-4960-bf2f-f4ab894bafe8)
+
 
 ## 🔥 주요 기능
 
