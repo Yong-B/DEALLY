@@ -191,6 +191,7 @@
     <form class="search-box" th:action="@{/basic/items}" method="get">
         <input type="text" id="searchInput" name="searchKeyword" placeholder="검색어를 입력하세요" th:value="${searchKeyword}">
         <button class="btn btn-primary" type="submit">검색</button>
+        
     </form>
     <div class="nav-buttons">
         <!-- 로그인 상태에 따라 다른 버튼 보여주기 -->
@@ -203,6 +204,7 @@
 </div>
 
 <div class="container">
+    
     <!-- 상품 등록 버튼 - 로그인 체크 추가 -->
     <a class="add-product" href="javascript:void(0)" onclick="checkLoginBeforeAction('/basic/items/add')">상품 등록</a>
 

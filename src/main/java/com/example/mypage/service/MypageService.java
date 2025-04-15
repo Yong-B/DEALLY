@@ -1,5 +1,7 @@
 package com.example.mypage.service;
 
+import com.example.product.domain.Item;
+import com.example.product.repository.ItemRepository;
 import com.example.user.member.controller.dto.MemberInfoDto;
 import com.example.user.member.domain.Member;
 import com.example.user.member.repository.MemberRepository;
@@ -8,12 +10,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class MypageService implements MemberUpdateUseCase {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ItemRepository itemRepository;
     
     public MemberInfoDto getMemberInfo(String loginId) {
         Member member = memberRepository.findByLoginId(loginId)
@@ -39,5 +45,4 @@ public class MypageService implements MemberUpdateUseCase {
         findMember.updatePassword(encodedPassword);
         return memberRepository.save(findMember);
     }
-    
 }

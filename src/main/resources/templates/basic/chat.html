@@ -19,6 +19,7 @@
             background-color: white;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
+
         .navbar .logo a {
             font-size: 28px;
             font-weight: bold;
@@ -27,23 +28,23 @@
         }
 
         .chat-container {
-            max-width: 600px;
+            max-width: 900px;
             margin: 50px auto;
             background-color: #ffffff;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 25px 30px;
             display: flex;
             flex-direction: column;
         }
-        
+
         .chat-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 25px;
         }
-        
+
         .back-button {
             background-color: #f0f0f0;
             border: none;
@@ -55,32 +56,44 @@
             align-items: center;
             transition: background-color 0.2s;
         }
-        
+
         .back-button:hover {
             background-color: #e0e0e0;
         }
-        
-        .back-button i {
-            margin-right: 5px;
+
+        .product-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .product-info h3 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .product-info p {
+            font-size: 18px;
+            color: #666;
         }
 
         .chat-window {
-            height: 400px;
+            height: 500px;
             border: 1px solid #ddd;
             overflow-y: scroll;
-            padding: 15px;
+            padding: 20px;
             background-color: #fafafa;
             display: flex;
             flex-direction: column;
+            border-radius: 8px;
         }
 
         .message {
-            padding: 10px;
-            margin-bottom: 10px;
+            padding: 12px 15px;
+            margin-bottom: 12px;
             border-radius: 10px;
             background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            max-width: 60%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            max-width: 65%;
             word-wrap: break-word;
         }
 
@@ -96,22 +109,22 @@
 
         .input-group {
             display: flex;
-            margin-top: 10px;
+            margin-top: 15px;
         }
 
         .input-group input {
             flex: 1;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #ddd;
-            border-radius: 5px 0 0 5px;
+            border-radius: 6px 0 0 6px;
         }
 
         .input-group button {
-            padding: 10px 20px;
+            padding: 12px 20px;
             background-color: #ff8a3d;
             border: none;
             color: #fff;
-            border-radius: 0 5px 5px 0;
+            border-radius: 0 6px 6px 0;
             cursor: pointer;
         }
 
@@ -125,16 +138,37 @@
     <div class="logo">
         <a href="/basic/items">DEALLY</a>
     </div>
-    <button onclick="location.href='/basic/items'">목록으로</button>
+    <form class="search-box" th:action="@{/basic/items}" method="get">
+        <input type="text" id="searchInput" name="searchKeyword" placeholder="검색어를 입력하세요" th:value="${searchKeyword}">
+        <button class="btn btn btn-primary" type="submit">검색</button>
+    </form>
+    <div class="nav-buttons">
+        <button class="btn btn-secondary" onclick="checkLoginBeforeAction('/basic/chatroom')">채팅내역</button>
+        <button class="btn btn btn-primary" onclick="checkLoginBeforeAction('/basic/mypage')">마이페이지</button>
+        <button class="btn btn-secondary" onclick="logout()">로그아웃</button>
+    </div>
 </div>
 
 <div class="chat-container">
-    <div class="chat-header">
-        <button class="back-button" onclick="goBack()">
+    <div class="chat-header" style="display: flex; align-items: center; justify-content: center; position: relative; padding: 10px;">
+    <button class="back-button" onclick="goBack()" style="position: absolute; left: 10px;">
             <i>←</i> 뒤로 가기
         </button>
-        <h2>채팅방</h2>
-        <div style="width: 80px;"></div> <!-- 빈 공간으로 제목 중앙 정렬 -->
+        <a th:href="@{/basic/items/{id}(id=${item.id})}" style="text-decoration: none; color: inherit;">
+            <div class="product-info" style="display: flex; align-items: center; gap: 12px;">
+                <img th:src="${(item.imagesFiles != null and item.imagesFiles.size() > 0) 
+            ? '/basic/items/images/' + item.imagesFiles[0].storeFileName 
+            : '/No image.png'}"
+                     alt="상품 이미지"
+                     style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+
+                <div style="text-align: center;">
+                    <h3 th:text="${item.itemName}" style="margin: 0;">상품 이름</h3>
+                    <p th:text="|${#numbers.formatInteger(item.price, 0, 'COMMA')}원|"
+                       style="margin: 0; color: #ff8a3d; font-weight: bold;">가격</p>
+                </div>
+            </div>
+        </a>
     </div>
 
     <div class="chat-window" id="chatWindow"></div>
@@ -146,56 +180,100 @@
 </div>
 
 <script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        checkLoginStatus();
+    });
+    // 로그인 상태 확인 함수
+    async function checkLoginStatus() {
+        try {
+            const response = await fetch('/member/check-login', {
+                method: 'GET',
+                credentials: 'include'  // 쿠키 포함
+            });
+            
+            const authButton = document.getElementById('authButton');
+            
+            if (response.ok) {
+                // 로그인 상태
+                console.log("로그인 상태 확인: 로그인됨");
+                authButton.textContent = '로그아웃';
+                authButton.onclick = logout;
+            } else {
+                // 비로그인 상태
+                console.log("로그인 상태 확인: 로그인되지 않음");
+                authButton.textContent = '로그인';
+                authButton.onclick = showLoginModal;
+            }
+        } catch (error) {
+            console.error("로그인 상태 확인 중 에러:", error);
+        }
+    }
+    
+    // 로그인 필요한 액션 전 체크
+    async function checkLoginBeforeAction(url) {
+        try {
+            const response = await fetch('/member/check-login', {
+                method: 'GET',
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                // 로그인 상태면 바로 이동
+                location.href = url;
+            } else {
+                // 비로그인 상태면 모달 표시
+                const modal = document.getElementById('loginModal');
+                modal.style.display = 'flex';
+            }
+        } catch (error) {
+            console.error("로그인 상태 확인 중 에러:", error);
+            const modal = document.getElementById('loginModal');
+            modal.style.display = 'flex';
+        }
+    }
+    
+    // 나머지 함수들은 그대로 유지
+    function showLoginModal() {
+        const modal = document.getElementById('loginModal');
+        modal.style.display = 'flex';
+    }
+    
+    function closeLoginModal() {
+        const modal = document.getElementById('loginModal');
+        modal.style.display = 'none';
+    }
     let socket;
     const chatWindow = document.getElementById('chatWindow');
 
     const chatRoomId = [[${chatRoomId}]];
     const senderId = [[${userId}]];
 
-    // 뒤로 가기 함수
     function goBack() {
-        // 브라우저의 이전 페이지로 이동
         window.history.back();
     }
 
-    // Load messages from the server
     function loadMessages() {
-        console.log('Loading messages for chatRoomId:', chatRoomId);
         fetch(`/chatroom/${chatRoomId}`)
-            .then(response => {
-                console.log('Response status:', response.status);
-                return response.json();
-            })
+            .then(response => response.json())
             .then(messages => {
-                console.log('Received messages:', messages);
                 chatWindow.innerHTML = '';
-                
                 messages.forEach(message => {
-                    console.log('Processing message:', message);
                     displayMessage(message.message, message.senderId === senderId);
                 });
             })
-            .catch(err => console.error('Failed to load messages:', err));
+            .catch(err => console.error('메시지 불러오기 실패:', err));
     }
- function connect() {
+
+    function connect() {
         socket = new WebSocket(`ws://localhost:8080/ws/chat?chatRoomId=${chatRoomId}&senderId=${senderId}`);
 
-        socket.onopen = function() {
-            console.log("✅ WebSocket 연결 완료");
-        };
-
-        socket.onmessage = function(event) {
+        socket.onopen = () => console.log("✅ WebSocket 연결됨");
+        socket.onmessage = (event) => {
             const message = JSON.parse(event.data);
             displayMessage(message.message, message.senderId === senderId);
         };
-
-        socket.onclose = function() {
-            console.log("❌ WebSocket 연결 종료");
-        };
-
-        socket.onerror = function(error) {
-            console.error("WebSocket 에러 발생: ", error);
-        };
+        socket.onclose = () => console.log("❌ WebSocket 연결 종료");
+        socket.onerror = (error) => console.error("WebSocket 오류:", error);
     }
 
     function sendMessage() {
@@ -226,16 +304,30 @@
         const messageDiv = document.createElement('div');
         messageDiv.classList.add('message');
         messageDiv.classList.add(isMine ? 'my-message' : 'other-message');
-
         messageDiv.textContent = message;
         chatWindow.appendChild(messageDiv);
         chatWindow.scrollTop = chatWindow.scrollHeight;
     }
 
-    window.onload = function() {
-        loadMessages();  // 먼저 이전 메시지들을 로드
-        connect();       // 그 다음 웹소켓 연결
-    };
+    async function logout() {
+        try {
+            let response = await fetch("/logout", {
+                method: "POST",
+                credentials: "include"
+            });
+            if (response.ok || response.status === 400) {
+                localStorage.removeItem("accessToken");
+                window.location.href = "/login";
+            }
+        } catch (error) {
+            console.error("로그아웃 오류", error);
+        }
+    }
+
+    window.onload = function () {
+        loadMessages();
+        connect();
+    }
 </script>
 </body>
 </html>

@@ -20,6 +20,7 @@
             background-color: white;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
+
         .navbar .logo a {
             font-size: 28px;
             font-weight: bold;
@@ -79,6 +80,59 @@
             font-size: 18px;
             margin-top: 20px;
         }
+
+        .checkmark {
+            display: none;
+            font-size: 20px;
+            color: green;
+        }
+
+        .selected .checkmark {
+            display: block;
+        }
+
+        .select-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #ff8a3d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+        }
+
+        .select-button:hover {
+            background-color: #e47c2b;
+        }
+
+        /* 로그인 모달 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+        }
+
+        .modal-content button {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -91,11 +145,8 @@
         <button class="btn btn-primary" type="submit">검색</button>
     </form>
     <div class="nav-buttons">
-        <!-- 로그인 상태에 따라 다른 버튼 보여주기 -->
-        <button class="btn btn-secondary" id="chatButton" onclick="checkLoginBeforeAction('/basic/chatroom')">채팅내역</button>
-        <button class="btn btn-primary" id="myPageButton" onclick="checkLoginBeforeAction('/basic/mypage')">마이페이지</button>
-
-        <!-- 로그인/로그아웃 버튼 - 자바스크립트로 text와 동작 변경 -->
+        <button class="btn btn-secondary" onclick="checkLoginBeforeAction('/basic/chatroom')">채팅내역</button>
+        <button class="btn btn-primary" onclick="checkLoginBeforeAction('/basic/mypage')">마이페이지</button>
         <button class="btn btn-secondary" id="authButton">로그인</button>
     </div>
 </div>
@@ -105,47 +156,87 @@
     <ul class="chatroom-list" id="chatroomList">
         <li th:each="chatRoom : ${chatRooms}" class="chatroom-item"
             th:attr="data-chatroom-id=${chatRoom.chatRoomId}"
-            onclick="goToChatRoom(this)">
+            onclick="toggleSelection(this)">
             <div>
                 <div class="chatroom-title" th:text="${chatRoom.itemName}">상품 이름</div>
                 <div class="last-message" th:text="${chatRoom.lastMessage}">마지막 메시지</div>
             </div>
             <div class="timestamp" th:text="${chatRoom.lastTimestamp}"></div>
+            <div class="checkmark">✔</div>
         </li>
     </ul>
 
     <div class="no-chatrooms" th:if="${chatRooms.size() == 0}">
         참여 중인 채팅방이 없습니다.
     </div>
+
+    <button class="select-button" onclick="selectBuyer()">구매자 선택</button>
 </div>
+
+<!-- 로그인 모달 -->
+<div class="modal" id="loginModal">
+    <div class="modal-content">
+        <h4>로그인이 필요합니다</h4>
+        <button class="btn btn-primary" onclick="location.href='/login'">로그인 하러가기</button>
+        <button class="btn btn-secondary" onclick="closeLoginModal()">닫기</button>
+    </div>
+</div>
+
 <script th:inline="javascript">
-    
-    function goToChatRoom(element) {
-        const chatRoomId = element.getAttribute("data-chatroom-id");
-        window.location.href = `/chat/enter/${chatRoomId}`;
+    function toggleSelection(element) {
+        const items = document.querySelectorAll('.chatroom-item');
+        items.forEach(item => item.classList.remove("selected"));
+        element.classList.add("selected");
     }
-    document.addEventListener('DOMContentLoaded', function() {
+
+    async function selectBuyer() {
+        const selectedChatRoom = document.querySelector('.chatroom-item.selected');
+        if (selectedChatRoom) {
+            const chatRoomId = selectedChatRoom.getAttribute("data-chatroom-id");
+            const itemId = chatRoomId.split("_")[0];
+
+            try {
+               const response = await fetch(`/basic/${itemId}/chatroom-selection`, {
+                     method: 'POST',
+                     headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                     },
+                     body: new URLSearchParams({
+                         chatRoomId: chatRoomId
+                     })    
+                 });
+
+                if (response.ok) {
+                    alert("구매자가 선택되었습니다.");
+                    location.reload();
+                } else {
+                    alert("선택 실패. 다시 시도해주세요.");
+                }
+            } catch (error) {
+                console.error("구매자 선택 오류:", error);
+            }
+        } else {
+            alert("채팅방을 선택해주세요.");
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
         checkLoginStatus();
     });
-    
-    // 로그인 상태 확인 함수
+
     async function checkLoginStatus() {
         try {
             const response = await fetch('/member/check-login', {
                 method: 'GET',
-                credentials: 'include'  // 쿠키 포함
+                credentials: 'include'
             });
-            
+
             const authButton = document.getElementById('authButton');
-            
+
             if (response.ok) {
-                // 로그인 상태
-                console.log("로그인 상태 확인: 로그인됨");
                 authButton.textContent = '로그아웃';
                 authButton.onclick = logout;
             } else {
-                // 비로그인 상태
-                console.log("로그인 상태 확인: 로그인되지 않음");
                 authButton.textContent = '로그인';
                 authButton.onclick = showLoginModal;
             }
@@ -153,44 +244,38 @@
             console.error("로그인 상태 확인 중 에러:", error);
         }
     }
-    
-    // 로그인 필요한 액션 전 체크
+
     async function checkLoginBeforeAction(url) {
         try {
             const response = await fetch('/member/check-login', {
                 method: 'GET',
                 credentials: 'include'
             });
-            
+
             if (response.ok) {
-                // 로그인 상태면 바로 이동
                 location.href = url;
             } else {
-                // 비로그인 상태면 모달 표시
-                const modal = document.getElementById('loginModal');
-                modal.style.display = 'flex';
+                showLoginModal();
             }
         } catch (error) {
             console.error("로그인 상태 확인 중 에러:", error);
-            const modal = document.getElementById('loginModal');
-            modal.style.display = 'flex';
+            showLoginModal();
         }
     }
-    
-    // 나머지 함수들은 그대로 유지
+
     function showLoginModal() {
         const modal = document.getElementById('loginModal');
         modal.style.display = 'flex';
     }
-    
+
     function closeLoginModal() {
         const modal = document.getElementById('loginModal');
         modal.style.display = 'none';
     }
-    
+
     async function logout() {
         try {
-            let response = await fetch("/logout", {
+            const response = await fetch("/logout", {
                 method: "POST",
                 credentials: "include"
             });
@@ -203,8 +288,8 @@
             console.error("Error during logout", error);
         }
     }
-    
-    window.onclick = function(event) {
+
+    window.onclick = function (event) {
         const modal = document.getElementById('loginModal');
         if (event.target == modal) {
             modal.style.display = 'none';

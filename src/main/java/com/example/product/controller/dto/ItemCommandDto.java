@@ -21,8 +21,11 @@ public  final class ItemCommandDto {
             @Min(0)
             @NotNull(message = "상품 가격을 입력하십시오.")
             Float price,
-            @NotNull(message = "상품 수량을 입력하십시오.")
-            Integer quantity,
+            
+            @NotBlank(message = "상품 상세 설명을 입력하십시오.")
+            @Size(max = 500, message = "상품 상세 설명은 최대 500글자입니다.")
+            String description,  // 상품 상세 설명 필드 추가
+            
             List<MultipartFile> imageFiles
     ) {
     }

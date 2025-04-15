@@ -109,12 +109,175 @@
         .btn-orange:hover {
             background-color: #ff702d;
         }
+        
+        .product-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px 0;
+        }
+
+        .product-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .product-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .product-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px 0 5px;
+        }
+
+        .product-price {
+            font-size: 14px;
+            color: #ff8a3d;
+            font-weight: bold;
+        }
+
+        .add-product {
+            display: block;
+            text-align: right;
+            margin-bottom: 20px;
+            color: #ff8a3d;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        
+        .product-card img {
+             width: 100%;
+             height: 250px;
+             object-fit: cover;
+             border-radius: 10px;
+        }
+        
+        /* 로그인 모달 스타일 */
+        .login-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-modal-content {
+    position: relative;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 350px; /* 너비 증가 */
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    word-break: keep-all; /* 단어 단위로 줄바꿈 */
+    word-wrap: break-word; /* 긴 단어 줄바꿈 */
+}
+
+.login-modal-content h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.login-modal-content p {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.login-modal-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.login-modal-buttons button {
+    padding: 14px;
+    border-radius: 5px;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.login-modal-buttons .login-btn {
+    background-color: #ff8a3d;
+    color: white;
+    font-weight: bold;
+}
+
+.login-modal-buttons .login-btn:hover {
+    background-color: #ff702d;
+    transform: translateY(-2px);
+}
+
+.login-modal-buttons .register-btn {
+    background-color: #f1f1f1;
+    color: #333;
+}
+
+.login-modal-buttons .register-btn:hover {
+    background-color: #e1e1e1;
+    transform: translateY(-2px);
+}
+
+.login-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #aaa;
+    transition: color 0.2s;
+}
+
+.login-modal-close:hover {
+    color: #333;
+}
     </style>
 </head>
 <body>
 <div class="navbar">
     <div class="logo">
         <a th:href="@{/basic/items}">DEALLY</a>
+    </div>
+    <form class="search-box" th:action="@{/basic/items}" method="get">
+        <input type="text" id="searchInput" name="searchKeyword" placeholder="검색어를 입력하세요" th:value="${searchKeyword}">
+        <button class="btn btn btn-primary" type="submit">검색</button>
+    </form>
+    <div class="nav-buttons">
+        <button class="btn btn-secondary" id="chatButton" onclick="checkLoginBeforeAction('/basic/chatroom')">채팅내역</button>
+        <button class="btn btn btn-primary" onclick="checkLoginBeforeAction('/basic/mypage')">마이페이지</button>
+        <button class="btn btn-secondary" id="authButton">로그인</button>
+    </div>
+</div>
+
+<!-- 로그인 모달 추가 -->
+<div class="login-modal" id="loginModal">
+    <div class="login-modal-content">
+        <span class="login-modal-close" onclick="closeLoginModal()">&times;</span>
+        <h3>로그인이 필요합니다</h3>
+        <p>이 기능을 사용하려면 로그인이 필요합니다.</p>
+        <div class="login-modal-buttons">
+            <button class="login-btn" onclick="location.href='/login'">로그인</button>
+            <button class="register-btn" onclick="location.href='/member/add'">회원가입</button>
+        </div>
     </div>
 </div>
 <div class="container">
@@ -123,7 +286,6 @@
             <li class="active" onclick="showSection('info')">정보 수정</li>
             <li onclick="showSection('purchases')">구매 내역</li>
             <li onclick="showSection('sales')">판매 내역</li>
-            <li onclick="showSection('recent')">최근 본 게시글</li>
         </ul>
     </div>
     <div class="content">
@@ -136,15 +298,15 @@
             <form th:action="@{/basic/mypage/update}" method="post">
                 <div class="info-field">
                     <label for="name">이름</label>
-                    <input type="text" id="name" name="name" th:value="${memberInfo.name}">
+                    <input type="text" id="name" name="name" th:value="${memberInfo.name}" disabled>
                 </div>
                 <div class="info-field">
                     <label for="loginId">아이디</label>
-                    <input type="text" id="loginId" name="loginId" th:value="${memberInfo.loginId}" readonly>
+                    <input type="text" id="loginId" name="loginId" th:value="${memberInfo.loginId}" disabled>
                 </div>
                 <div class="info-field">
                     <label for="email">이메일</label>
-                    <input type="email" id="email" name="email" th:value="${memberInfo.email}">
+                    <input type="email" id="email" name="email" th:value="${memberInfo.email}" disabled>
                 </div>
                 <div class="info-field">
                     <label for="password">비밀번호 변경</label>
@@ -153,37 +315,136 @@
                 <button class="btn-orange" type="submit">저장하기</button>
             </form>
         </div>
+        
         <div id="purchases" class="section">
             <h3>구매 내역</h3>
-            <ul>
-                <li>닌텐도 스위치 - 250,000원</li>
-                <li>스탠딩 책상 - 80,000원</li>
-                <li>아이패드 프로 - 900,000원</li>
-            </ul>
+            <div class="product-list" th:if="${buyingItems != null and buyingItems.totalElements > 0}">
+                <div class="product-card" th:each="item : ${buyingItems.content}">
+                    <a class="product-link" th:href="@{/basic/items/{itemId}(itemId=${item.id})}">
+                        <img th:src="${(item.imagesFiles != null and item.imagesFiles.size() > 0) 
+                    ? '/basic/items/images/' + item.imagesFiles[0].storeFileName 
+                    : '/No image.png'}"
+                             alt="상품 이미지"
+                             class="product-image">
+
+                        <div class="product-name" th:text="${item.itemName}">상품명</div>
+                        <div class="product-price" th:text="|${#numbers.formatInteger(item.price, 0, 'COMMA')}원|">10000원</div>
+                    </a>
+                </div>
+            </div>
+            <div th:if="${buyingItems.totalElements == 0}">
+                <p>구매하신 상품이 없습니다.</p>
+            </div>
         </div>
         <div id="sales" class="section">
             <h3>판매 내역</h3>
-            <ul>
-                <li>에어팟 프로 - 150,000원</li>
-                <li>게이밍 키보드 - 70,000원</li>
-            </ul>
-        </div>
-        <div id="recent" class="section">
-            <h3>최근 본 게시글</h3>
-            <ul>
-                <li><a href="/basic/items/1">맥북 에어 M2</a></li>
-                <li><a href="/basic/items/2">자전거 - 알톤 로드마스터</a></li>
-                <li><a href="/basic/items/3">플레이스테이션5</a></li>
-            </ul>
+
+            <div class="product-list" th:if="${sellingItems != null and sellingItems.totalElements > 0}">
+                <div class="product-card" th:each="item : ${sellingItems.content}">
+                    <a class="product-link" th:href="@{/basic/items/{itemId}(itemId=${item.id})}">
+                        <img th:src="${(item.imagesFiles != null and item.imagesFiles.size() > 0) 
+                    ? '/basic/items/images/' + item.imagesFiles[0].storeFileName 
+                    : '/No image.png'}"
+                             alt="상품 이미지"
+                             class="product-image">
+
+                        <div class="product-name" th:text="${item.itemName}">상품명</div>
+                        <div class="product-price" th:text="|${#numbers.formatInteger(item.price, 0, 'COMMA')}원|">10000원</div>
+                        <div class="product-status" th:text="${item.status.displayName}">판매중</div>
+                    </a>
+                </div>
+            </div>
+            <div th:if="${sellingItems.totalElements == 0}">
+                <p>등록한 판매 상품이 없습니다.</p>
+            </div>
         </div>
     </div>
 </div>
-<script>
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        checkLoginStatus();
+    });
+    
+    // 로그인 상태 확인 함수
+    async function checkLoginStatus() {
+        try {
+            const response = await fetch('/member/check-login', {
+                method: 'GET',
+                credentials: 'include'  // 쿠키 포함
+            });
+            
+            const authButton = document.getElementById('authButton');
+            
+            if (response.ok) {
+                // 로그인 상태
+                console.log("로그인 상태 확인: 로그인됨");
+                authButton.textContent = '로그아웃';
+                authButton.onclick = logout;
+            } else {
+                // 비로그인 상태
+                console.log("로그인 상태 확인: 로그인되지 않음");
+                authButton.textContent = '로그인';
+                authButton.onclick = showLoginModal;
+            }
+        } catch (error) {
+            console.error("로그인 상태 확인 중 에러:", error);
+        }
+    }
+    
+    // 로그인 필요한 액션 전 체크
+    async function checkLoginBeforeAction(url) {
+        try {
+            const response = await fetch('/member/check-login', {
+                method: 'GET',
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                // 로그인 상태면 바로 이동
+                location.href = url;
+            } else {
+                // 비로그인 상태면 모달 표시
+                const modal = document.getElementById('loginModal');
+                modal.style.display = 'flex';
+            }
+        } catch (error) {
+            console.error("로그인 상태 확인 중 에러:", error);
+            const modal = document.getElementById('loginModal');
+            modal.style.display = 'flex';
+        }
+    }
+    
+    // 나머지 함수들은 그대로 유지
+    function showLoginModal() {
+        const modal = document.getElementById('loginModal');
+        modal.style.display = 'flex';
+    }
+    
+    function closeLoginModal() {
+        const modal = document.getElementById('loginModal');
+        modal.style.display = 'none';
+    }
     function showSection(id) {
         document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
         document.querySelectorAll('.sidebar li').forEach(tab => tab.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         event.target.classList.add('active');
+    }
+    async function logout() {
+        try {
+            let response = await fetch("/logout", {
+                method: "POST",
+                credentials: "include"
+            });
+            if (response.ok || response.status === 400) {
+                localStorage.removeItem("accessToken");
+                window.location.href = "/login";
+            } else {
+                console.error("Logout failed");
+            }
+        } catch (error) {
+            console.error("Error during logout", error);
+        }
     }
 </script>
 </body>

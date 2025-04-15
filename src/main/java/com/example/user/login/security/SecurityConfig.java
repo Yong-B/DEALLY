@@ -69,8 +69,10 @@ public class SecurityConfig {
                         .requestMatchers("/basic/chatroom/**").hasRole("USER")
                         .requestMatchers("/basic/chat/enter/**").hasRole("USER")
                         .requestMatchers("/basic/mypage").hasRole("USER")
+                        .requestMatchers("/basic/mypage/**").hasRole("USER")
                         .requestMatchers("/basic/mypage/update").hasRole("USER")
                         .requestMatchers("/chat/enter/**").hasRole("USER")
+                        .requestMatchers("/basic/chatroom-selection/**").hasRole("USER")
                         .requestMatchers("/ws/chat").permitAll()
                         .requestMatchers("/chatroom/**").permitAll()
                         .requestMatchers("/member/check-login").permitAll()  // 추가
