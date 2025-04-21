@@ -28,7 +28,7 @@ public class ItemBuyerController {
                             Model model) {
         String userId = memberDetails.getUsername();
         Item item = itemSelectOneUseCase.findById(itemId);
-        List<Map<String, Object>> chatRoomsData = itemBuyerService.getChatRoomsWithItemInfoByItemId(itemId);
+        List<Map<String, Object>> chatRoomsData = itemBuyerService.getChatRoomsWithItemInfoByItemId(itemId, userId);
         model.addAttribute("chatRooms", chatRoomsData);
 
         return "basic/chatroom-selection"; // 채팅방 목록 화면
