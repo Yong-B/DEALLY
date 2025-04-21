@@ -75,7 +75,7 @@ public class ItemController {
 
     @GetMapping // 목록 조회
     public String items(Model model,
-                        @PageableDefault(page = 0, size = 10, sort = "id", direction = Direction.ASC)Pageable pageable,
+                        @PageableDefault(page = 0, size = 30, sort = "id", direction = Direction.ASC)Pageable pageable,
                         String searchKeyword) {
         Page<Item> items;
 

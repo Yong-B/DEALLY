@@ -240,6 +240,20 @@
 .login-modal-close:hover {
     color: #333;
 }
+        .custom-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D'10'%20height%3D'6'%20viewBox%3D'0%200%2010%206'%20xmlns%3D'http%3A//www.w3.org/2000/svg'%3E%3Cpath%20d%3D'M0%200l5%206%205-6z'%20fill%3D'%23999'%20/%3E%3C/svg%3E") no-repeat right 10px center;
+    background-size: 10px 6px;
+    padding-right: 30px;
+    font-size: 1rem;
+    color: #333;
+    cursor: pointer;
+}
     </style>
 </head>
 <body>
@@ -281,14 +295,18 @@
                  class="product-image">
         </div>
         <div class="info-container">
-            <form th:action="@{/basic/items/{itemId}/changeStatus(itemId=${item.id})}" method="post">
-            <label for="statusSelect">상태 변경</label>
-            <select id="statusSelect" name="status" class="form-control" onchange="this.form.submit()">
-                <option value="AVAILABLE" th:selected="${item.status.name() == 'AVAILABLE'}">판매중</option>
-                <option value="COMPLETED" th:selected="${item.status.name() == 'COMPLETED'}">거래완료</option>
-            </select>
-        </form>
-            <h2 th:text="${item.itemName}">상품명</h2>
+            <!-- 상품명과 상태 변경 드롭다운 수평 정렬 -->
+            <div class="d-flex align-items-center justify-content-between mb-3" style="gap: 20px;">
+                <h2 th:text="${item.itemName}" style="margin: 0; flex-grow: 1;">상품명</h2>
+
+                <!-- 상태 드롭다운 (label 제거 + 기본 화살표 표시) -->
+                <form th:action="@{/basic/items/{itemId}/changeStatus(itemId=${item.id})}" method="post">
+                    <select id="statusSelect" name="status" class="custom-select" onchange="this.form.submit()">
+                        <option value="AVAILABLE" th:selected="${item.status.name() == 'AVAILABLE'}">판매중</option>
+                        <option value="COMPLETED" th:selected="${item.status.name() == 'COMPLETED'}">거래완료</option>
+                    </select>
+                </form>
+            </div>
             <div class="price">
                 <span th:text="${#numbers.formatInteger(item.price, 0, 'COMMA')}">가격</span> 원
             </div>

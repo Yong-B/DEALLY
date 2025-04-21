@@ -107,7 +107,8 @@
             th:attr="data-chatroom-id=${chatRoom.chatRoomId}"
             onclick="goToChatRoom(this)">
             <div>
-                <div class="chatroom-title" th:text="${chatRoom.itemName}">상품 이름</div>
+                <div class="chatroom-title" th:text="${chatRoom.opponentId}">상대방</div>
+                <div class="last-message" th:text="${chatRoom.itemName}">상품 이름</div>
                 <div class="last-message" th:text="${chatRoom.lastMessage}">마지막 메시지</div>
             </div>
             <div class="timestamp" th:text="${chatRoom.lastTimestamp}"></div>
