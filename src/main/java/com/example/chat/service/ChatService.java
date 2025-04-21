@@ -114,6 +114,9 @@ public class ChatService {
                 data.put("lastTimestamp", "");
             }
 
+            String opponentId = userId.equals(room.getUser1()) ? room.getUser2() : room.getUser1();
+            data.put("opponentId", opponentId);
+
             result.add(data);
         }
 

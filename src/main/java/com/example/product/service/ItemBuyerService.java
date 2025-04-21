@@ -27,7 +27,7 @@ public class ItemBuyerService implements ItemBuyerUseCase {
     private final ItemRepository itemRepository;
     
     @Transactional(readOnly = true)
-    public List<Map<String, Object>> getChatRoomsWithItemInfoByItemId(Long itemId) {
+    public List<Map<String, Object>> getChatRoomsWithItemInfoByItemId(Long itemId,String userId) {
         List<ChatRoom> chatRooms = chatRoomRepository.findByItemId(itemId);
         List<Map<String, Object>> result = new ArrayList<>();
 
@@ -60,6 +60,10 @@ public class ItemBuyerService implements ItemBuyerUseCase {
                 data.put("lastMessage", "");
                 data.put("lastTimestamp", "");
             }
+
+            String opponentId = userId.equals(room.getUser1()) ? room.getUser2() : room.getUser1();
+            data.put("opponentId", opponentId);
+
 
             result.add(data);
         }
