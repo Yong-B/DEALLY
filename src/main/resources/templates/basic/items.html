@@ -180,6 +180,14 @@
 .login-modal-close:hover {
     color: #333;
 }
+        footer {
+    background-color: #f1f1f1;
+    padding: 30px 20px;
+    font-size: 13px;
+    color: #777;
+    text-align: center;
+    line-height: 1.6;
+}
     </style>
 </head>
 <body>
@@ -191,7 +199,7 @@
     <form class="search-box" th:action="@{/basic/items}" method="get">
         <input type="text" id="searchInput" name="searchKeyword" placeholder="검색어를 입력하세요" th:value="${searchKeyword}">
         <button class="btn btn-primary" type="submit">검색</button>
-        
+
     </form>
     <div class="nav-buttons">
         <!-- 로그인 상태에 따라 다른 버튼 보여주기 -->
@@ -204,7 +212,7 @@
 </div>
 
 <div class="container">
-    
+
     <!-- 상품 등록 버튼 - 로그인 체크 추가 -->
     <a class="add-product" href="javascript:void(0)" onclick="checkLoginBeforeAction('/basic/items/add')">상품 등록</a>
 
@@ -331,5 +339,16 @@
         }
     }
 </script>
+<footer style="background-color: #f1f1f1; padding: 30px 20px; font-size: 13px; color: #777; text-align: center; line-height: 1.6;">
+    <div>(주) ooo</div>
+    <div>대표: ooo, ooo</div>
+    <div>사업자번호: 000-00-00000</div>
+    <div>직업정보제공사업 신고번호: J0000000000000</div>
+    <div>통신판매업 신고번호: 202x-서울xxx-xxxx</div>
+    <div>호스팅 사업자: Amazon Web Service(AWS)</div>
+    <div>주소: 서울특별시 ooo구 ooo로 00, 0층 (ooo서비스)</div>
+    <div>전화: 0000-0000</div>
+    <div>고객문의: cs@example.com</div>
+</footer>
 </body>
 </html>
