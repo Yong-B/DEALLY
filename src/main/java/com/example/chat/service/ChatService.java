@@ -46,7 +46,6 @@ public class ChatService {
                     return chatRoomRepository.save(chatRoom);
                 });
     }
-
     /**
      * 채팅 메시지 저장
      */
@@ -119,7 +118,6 @@ public class ChatService {
 
             result.add(data);
         }
-
         return result;
     }
     /**
@@ -129,7 +127,6 @@ public class ChatService {
         if (timestamp == null) return "";
         return timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
     }
-
     /**
      * chatRoomId로 채팅방 조회
      */

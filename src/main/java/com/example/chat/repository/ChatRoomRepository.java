@@ -15,4 +15,5 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
     // 로그인한 유저가 user1 또는 user2인 모든 채팅방 조회
     List<ChatRoom> findByUser1OrUser2(String user1, String user2);
+    
 }
