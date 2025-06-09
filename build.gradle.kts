@@ -32,6 +32,9 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven {
+		url = uri("https://jitpack.io")
+	}
 }
 
 dependencies {
@@ -76,6 +79,9 @@ dependencies {
 	
 	//websocket
 	implementation("org.springframework.boot:spring-boot-starter-websocket")
+	
+	//import
+	implementation("com.github.iamport:iamport-rest-client-java:0.1.6")
 }
 
 sourceSets {
@@ -106,4 +112,5 @@ tasks.withType<KotlinCompile> {
 	compilerOptions {
 		jvmTarget = JvmTarget.JVM_21
 	}
+
 }
