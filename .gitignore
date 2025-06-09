@@ -35,3 +35,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### JWT Key ###
+src/main/resources/application-jwt.yml
+
+### iamport Key ###
+src/main/resources/application-iamport.yml

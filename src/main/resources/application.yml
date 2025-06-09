@@ -1,4 +1,8 @@
 spring:
+  profiles:
+    active: dev        # 주 프로파일
+    include: jwt,iamport # 추가로 불러올 민감 정보
+    
   datasource:
     driver-class-name: org.postgresql.Driver
     url: ${DEMO_POSTGRESQL_URL:jdbc:postgresql://localhost:5433/demo}
@@ -36,12 +40,6 @@ spring:
       max-file-size: 10MB
       max-request-size: 20MB
   
-jwt:
-  secret: dptmvkzkflsktkfkdgodyroqkfwkdbalroqkfwkdbalaaaaaaaaaaaaaaaabbbbb
-  
 file:
   dir: C:/upload/
 
-iamport:
-  api-key: 7388886542048874
-  api-secret: IKHAAkNXXPLgCZbtgqQxOglCjLypV2wsCXaYxnUnem10WWhGN2XWjO7A6EdJeJYmQ83p8GEQdwF6FRU8
