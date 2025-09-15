@@ -3,6 +3,9 @@
 <head>
     <meta charset="utf-8">
     <link th:href="@{/css/bootstrap.min.css}" href="../css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <!-- iamport -->
+    <script src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -154,6 +157,9 @@
     <button class="back-button" onclick="goBack()" style="position: absolute; left: 10px;">
             <i>←</i> 뒤로 가기
         </button>
+        <button type="button" onclick="handlePayment()" style="position: absolute; right: 10px; background-color: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">
+            결제하기
+        </button>
         <a th:href="@{/basic/items/{id}(id=${item.id})}" style="text-decoration: none; color: inherit;">
             <div class="product-info" style="display: flex; align-items: center; gap: 12px;">
                 <img th:src="${(item.imagesFiles != null and item.imagesFiles.size() > 0) 
@@ -180,6 +186,76 @@
 </div>
 
 <script th:inline="javascript">
+        var IMP = window.IMP;
+        IMP.init("imp78358032"); // 아임포트 식별코드
+    
+        function handlePayment() {
+    IMP.request_pay({
+        pg: "kakaopay",
+        pay_method: "card",
+        merchant_uid: 'mid_' + new Date().getTime(),
+        name: /*[[${item.itemName}]]*/ '상품명',
+        amount: /*[[${item.price}]]*/ 0,
+        buyer_name: /*[[${senderId}]]*/ '기본이름',
+    }, function (rsp) {
+        if (rsp.success) {
+            alert("결제가 완료되었습니다.");
+
+            // 서버 검증 요청 (필요 없다면 생략 가능)
+            fetch('/payment/validation/' + rsp.imp_uid, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    merchantUid: rsp.merchant_uid,
+                    amount: rsp.paid_amount,
+                    buyerName: rsp.buyer_name
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    // 서버 응답 성공 시 회색 결제완료 메시지 전송
+                    const paymentMessage = {
+                        messageType: "TALK",
+                        chatRoomId: chatRoomId,
+                        senderId: senderId,
+                        message: "[결제가 완료되었습니다.]"
+                    };
+                    socket.send(JSON.stringify(paymentMessage));
+                } else {
+                    alert("결제 검증 실패");
+                }
+            })
+            .catch(error => {
+                alert("결제 검증 중 오류 발생: " + error);
+            });
+
+        } else {
+            alert("결제 실패: " + rsp.error_msg);
+        }
+    });
+}
+        function displayMessage(message, isMine) {
+    const messageDiv = document.createElement('div');
+
+    if (message === "[결제가 완료되었습니다.]") {
+        messageDiv.classList.add('message');
+        messageDiv.style.backgroundColor = '#e0e0e0';
+        messageDiv.style.color = '#333';
+        messageDiv.style.alignSelf = 'center';
+        messageDiv.style.textAlign = 'center';
+        messageDiv.style.fontStyle = 'italic';
+        messageDiv.textContent = message.replace(/\[|\]/g, ''); // 대괄호 제거
+    } else {
+        messageDiv.classList.add('message');
+        messageDiv.classList.add(isMine ? 'my-message' : 'other-message');
+        messageDiv.textContent = message;
+    }
+
+    chatWindow.appendChild(messageDiv);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+}
     document.addEventListener('DOMContentLoaded', function() {
         checkLoginStatus();
     });
