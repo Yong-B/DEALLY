@@ -1,3 +1,2 @@
 jwt:
-  secret: REMOVED_JWT
-  
+  secret: ${JWT_SECRET}

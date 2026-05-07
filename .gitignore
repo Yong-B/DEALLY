@@ -41,3 +41,6 @@ src/main/resources/application-jwt.yml
 
 ### iamport Key ###
 src/main/resources/application-iamport.yml
+
+### env ###
+.env
